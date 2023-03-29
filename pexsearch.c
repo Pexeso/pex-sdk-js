@@ -11,14 +11,16 @@
 
 #include "defer.h"
 
-const int kMaxArgSize = 100;
+static const int kMaxArgSize = 100;
+static const char *kClientProperty = "#client";
 
 static napi_status ArgsToCreds(napi_env env, napi_callback_info info,
-                               char *client_id, char *client_secret) {
+                               napi_value *this, char *client_id,
+                               char *client_secret) {
   size_t argc = 2;
   napi_value argv[2];
 
-  napi_status status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+  napi_status status = napi_get_cb_info(env, info, &argc, argv, this, NULL);
   if (status != napi_ok) {
     return napi_invalid_arg;
   }
@@ -43,13 +45,21 @@ static napi_status ArgsToCreds(napi_env env, napi_callback_info info,
   return napi_ok;
 }
 
+static void Destructor(napi_env env, void *data, void *hint) {
+  AE_Lock();
+  AE_Client_Delete(data);
+  AE_Unlock();
+  AE_Cleanup();
+}
+
 static napi_value Constructor(napi_env env, napi_callback_info info) {
   DEFER_INIT();
 
+  napi_value this;
   char client_id[kMaxArgSize];
   char client_secret[kMaxArgSize];
 
-  napi_status status = ArgsToCreds(env, info, client_id, client_secret);
+  napi_status status = ArgsToCreds(env, info, &this, client_id, client_secret);
   if (status != napi_ok) {
     napi_throw_error(env, NULL, "invalid arguments");
     return NULL;
@@ -66,14 +76,14 @@ static napi_value Constructor(napi_env env, napi_callback_info info) {
   }
 
   AE_Lock();
-  DEFER(AE_Unlock);
+  DEFER0(AE_Unlock);
 
   AE_Status *ae_status = AE_Status_New();
   if (!ae_status) {
     napi_throw_error(env, NULL, "out of memory");
     return NULL;
   }
-  DEFER_ARG(AE_Status_Delete, ae_status);
+  DEFER1(AE_Status_Delete, ae_status);
 
   AE_Client *ae_client = AE_Client_New();
   if (!ae_client) {
@@ -89,8 +99,25 @@ static napi_value Constructor(napi_env env, napi_callback_info info) {
     return NULL;
   }
 
-  printf("happy path\n");
-  // Happy path.
+  napi_value client;
+  status = napi_create_object(env, &client);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "out of memory");
+    return NULL;
+  }
+
+  status = napi_wrap(env, client, ae_client, Destructor, NULL, NULL);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "failed to wrap client object");
+    return NULL;
+  }
+
+  status = napi_set_named_property(env, this, kClientProperty, client);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "failed to set property");
+    return NULL;
+  }
+
   return NULL;
 }
 
