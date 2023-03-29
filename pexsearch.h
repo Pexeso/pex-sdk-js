@@ -7,4 +7,4 @@
 
 napi_value PexSearch(napi_env env);
 
-#endif // _PEXSEARCH_H
+#endif // _PEXSEARCH_H_

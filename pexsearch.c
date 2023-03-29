@@ -4,38 +4,54 @@
 
 #include <stdio.h>
 
+#include <pex/ae/sdk/client.h>
 #include <pex/ae/sdk/init.h>
+#include <pex/ae/sdk/lock.h>
 #include <pex/ae/sdk/status.h>
 
-static napi_value Constructor(napi_env env, napi_callback_info info) {
+#include "defer.h"
+
+const int kMaxArgSize = 100;
+
+static napi_status ArgsToCreds(napi_env env, napi_callback_info info,
+                               char *client_id, char *client_secret) {
   size_t argc = 2;
   napi_value argv[2];
 
   napi_status status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
   if (status != napi_ok) {
-    napi_throw_error(env, NULL, "failed to get cb info");
-    return NULL;
+    return napi_invalid_arg;
   }
 
   if (argc != 2) {
-    napi_throw_error(env, NULL, "invalid number of arguments");
-    return NULL;
+    return napi_invalid_arg;
   }
 
-  char client_id[100];
-  char client_secret[100];
   size_t result;
-  status = napi_get_value_string_utf8(env, argv[0], client_id,
-                                      sizeof(client_id), &result);
+  status =
+      napi_get_value_string_utf8(env, argv[0], client_id, kMaxArgSize, &result);
   if (status != napi_ok) {
-    napi_throw_error(env, NULL, "invalid client_id");
-    return NULL;
+    return napi_invalid_arg;
   }
 
-  status = napi_get_value_string_utf8(env, argv[1], client_secret,
-                                      sizeof(client_secret), &result);
+  status = napi_get_value_string_utf8(env, argv[1], client_secret, kMaxArgSize,
+                                      &result);
   if (status != napi_ok) {
-    napi_throw_error(env, NULL, "invalid client_secret");
+    return napi_invalid_arg;
+  }
+
+  return napi_ok;
+}
+
+static napi_value Constructor(napi_env env, napi_callback_info info) {
+  DEFER_INIT();
+
+  char client_id[kMaxArgSize];
+  char client_secret[kMaxArgSize];
+
+  napi_status status = ArgsToCreds(env, info, client_id, client_secret);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "invalid arguments");
     return NULL;
   }
 
@@ -49,6 +65,32 @@ static napi_value Constructor(napi_env env, napi_callback_info info) {
     return NULL;
   }
 
+  AE_Lock();
+  DEFER(AE_Unlock);
+
+  AE_Status *ae_status = AE_Status_New();
+  if (!ae_status) {
+    napi_throw_error(env, NULL, "out of memory");
+    return NULL;
+  }
+  // DEFER_ARG(AE_Status_Delete, ae_status);
+
+  AE_Client *ae_client = AE_Client_New();
+  if (!ae_client) {
+    napi_throw_error(env, NULL, "out of memory");
+    return NULL;
+  }
+
+  AE_Client_InitType(ae_client, AE_PEX_SEARCH, client_id, client_secret,
+                     ae_status);
+  if (!AE_Status_OK(ae_status)) {
+    AE_Client_Delete(&ae_client);
+    napi_throw_error(env, NULL, "out of memory");
+    return NULL;
+  }
+
+  printf("happy path\n");
+  // Happy path.
   return NULL;
 }
 
