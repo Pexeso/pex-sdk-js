@@ -73,7 +73,7 @@ static napi_value Constructor(napi_env env, napi_callback_info info) {
     napi_throw_error(env, NULL, "out of memory");
     return NULL;
   }
-  // DEFER_ARG(AE_Status_Delete, ae_status);
+  DEFER_ARG(AE_Status_Delete, ae_status);
 
   AE_Client *ae_client = AE_Client_New();
   if (!ae_client) {

@@ -19,7 +19,7 @@ void DeferFunc(napi_env env, void *finalize_data, void *finalize_hint) {
 }
 
 void DeferFuncArg(napi_env env, void *finalize_data, void *finalize_hint) {
-  void (*fn)() = finalize_hint;
+  void (*fn)(void *) = finalize_hint;
   fn(finalize_data);
 }
 
