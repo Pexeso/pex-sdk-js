@@ -5,6 +5,6 @@
 
 #include <node_api.h>
 
-napi_value PexSearchClient(napi_env env);
+napi_value PexSearch(napi_env env);
 
 #endif // _PEXSEARCH_H

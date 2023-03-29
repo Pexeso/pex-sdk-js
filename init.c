@@ -14,8 +14,7 @@ NAPI_MODULE_INIT() {
     return NULL;
   }
 
-  status = napi_set_named_property(env, ret, "PexSearchClient",
-                                   PexSearchClient(env));
+  status = napi_set_named_property(env, ret, "PexSearch", PexSearch(env));
   if (status != napi_ok) {
     napi_throw_error(env, NULL, "failed to set named property");
     return NULL;
