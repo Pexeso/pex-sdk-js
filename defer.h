@@ -9,18 +9,17 @@
   napi_value defer_;                                                           \
   napi_create_object(env, &defer_);
 
-#define DEFER0(f) napi_add_finalizer(env, defer_, NULL, DeferFunc, f, NULL)
-#define DEFER1(f, p)                                                           \
-  napi_add_finalizer(env, defer_, p, DeferFuncArg, NULL, NULL)
+#define DEFER0(f) napi_add_finalizer(env, defer_, NULL, DeferFunc0, f, NULL)
+#define DEFER1(f, p) napi_add_finalizer(env, defer_, *p, DeferFunc1, f, NULL)
 
-void DeferFunc(napi_env env, void *finalize_data, void *finalize_hint) {
+void DeferFunc0(napi_env env, void *finalize_data, void *finalize_hint) {
   void (*fn)() = finalize_hint;
   fn();
 }
 
-void DeferFuncArg(napi_env env, void *finalize_data, void *finalize_hint) {
+void DeferFunc1(napi_env env, void *finalize_data, void *finalize_hint) {
   void (*fn)(void *) = finalize_hint;
-  fn(finalize_data);
+  fn(&finalize_data);
 }
 
 #endif // _DEFER_H_

@@ -46,10 +46,12 @@ static napi_status ArgsToCreds(napi_env env, napi_callback_info info,
 }
 
 static void Destructor(napi_env env, void *data, void *hint) {
+  printf("starting destructor\n");
   AE_Lock();
   AE_Client_Delete(data);
   AE_Unlock();
   AE_Cleanup();
+  printf("starting finishing destructor\n");
 }
 
 static napi_value Constructor(napi_env env, napi_callback_info info) {
@@ -83,7 +85,7 @@ static napi_value Constructor(napi_env env, napi_callback_info info) {
     napi_throw_error(env, NULL, "out of memory");
     return NULL;
   }
-  DEFER1(AE_Status_Delete, ae_status);
+  DEFER1(AE_Status_Delete, &ae_status);
 
   AE_Client *ae_client = AE_Client_New();
   if (!ae_client) {
