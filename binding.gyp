@@ -3,12 +3,14 @@
     {
       "target_name": "pexae",
       "sources": [
+        "baseworker.cc",
+        "connectworker.cc",
+        "defer.cc",
+        "fingerprint.cc",
+        "fingerprintworker.cc",
         "init.cc",
         "pexsearch.cc",
-        "connectworker.cc",
-        "fingerprintworker.cc",
-        "fingerprint.cc",
-        "defer.cc"
+        "searchworker.cc"
       ],
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")"

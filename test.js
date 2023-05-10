@@ -1,4 +1,4 @@
-const pexae = require('./build/Debug/pexae.node')
+const pexae = require('./build/Release/pexae.node')
 
 async function main() {
   var ps = new pexae.PexSearch("client01", "secret01");
