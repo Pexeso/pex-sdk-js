@@ -7,20 +7,18 @@
 
 #include <pex/ae/sdk/client.h>
 
-class FingerprintWorker : public Napi::AsyncWorker {
+#include "baseworker.h"
+
+class FingerprintWorker final : public BaseWorker {
  public:
   FingerprintWorker(Napi::Promise::Deferred& deferred, std::string input, bool is_file)
-      : Napi::AsyncWorker(deferred.Env()),
-        deferred_(deferred),
-        input_(std::move(input)),
-        is_file_(is_file) {}
+      : BaseWorker(deferred), input_(std::move(input)), is_file_(is_file) {}
+  virtual ~FingerprintWorker() override {}
 
   void Execute() override;
-  void OnOK() override;
-  void OnError(const Napi::Error& error) override;
+  Napi::Value Resolve() override;
 
  private:
-  Napi::Promise::Deferred deferred_;
   std::string input_;
   bool is_file_;
   std::string output_;

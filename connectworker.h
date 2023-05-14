@@ -7,23 +7,23 @@
 
 #include <pex/ae/sdk/client.h>
 
-class ConnectWorker : public Napi::AsyncWorker {
+#include "baseworker.h"
+
+class ConnectWorker final : public BaseWorker {
  public:
   ConnectWorker(Napi::Promise::Deferred& deferred, AE_Client** client_p, std::string client_id,
                 std::string client_secret)
-      : Napi::AsyncWorker(deferred.Env()),
-        deferred_(deferred),
+      : BaseWorker(deferred),
         client_p_(client_p),
         client_id_(std::move(client_id)),
         client_secret_(std::move(client_secret)) {}
+  virtual ~ConnectWorker();
 
   void Execute() override;
-  void OnOK() override;
-  void OnError(const Napi::Error& error) override;
+  Napi::Value Resolve() override;
 
  private:
-  Napi::Promise::Deferred deferred_;
-  AE_Client** client_p_;
+  AE_Client** client_p_ = nullptr;
   std::string client_id_;
   std::string client_secret_;
 };

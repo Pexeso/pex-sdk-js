@@ -53,10 +53,6 @@ void FingerprintWorker::Execute() {
   output_.assign(data, size);
 }
 
-void FingerprintWorker::OnOK() {
-  deferred_.Resolve(Fingerprint::Make(Env(), std::move(output_)));
-}
-
-void FingerprintWorker::OnError(const Napi::Error& error) {
-  deferred_.Reject(error.Value());
+Napi::Value FingerprintWorker::Resolve() {
+  return Fingerprint::New(Env(), std::move(output_));
 }

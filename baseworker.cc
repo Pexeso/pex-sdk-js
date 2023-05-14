@@ -8,13 +8,25 @@ void BaseWorker::Reject(const AE_Status* status) {
 
 void BaseWorker::Reject(int code, const std::string& message) {
   status_code_ = code;
-  status_message_ = message;
+  SetError(message);
+}
+
+bool BaseWorker::IsRejected() {
+  return status_code_ != 0;
 }
 
 void BaseWorker::OnOK() {
-  if (status_code_ != 0) {
-    deferred_.Reject(Napi::String::New(Env(), status_message_));
+  auto val = Resolve();
+  if (IsRejected()) {
+    deferred_.Reject(Napi::String::New(Env(), "BAD SHIT"));  // TODO
     return;
   }
-  deferred_.Resolve(Resolve());
+  deferred_.Resolve(val);
+}
+
+void BaseWorker::OnError(const Napi::Error& error) {
+  if (status_code_ == 0) {  // TODO: change to constants when possible
+    status_code_ = 7;
+  }
+  deferred_.Reject(error.Value());
 }

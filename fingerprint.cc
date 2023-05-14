@@ -3,7 +3,7 @@
 #include "fingerprint.h"
 #include "context.h"
 
-Napi::Value Fingerprint::Make(Napi::Env env, std::string bytes) {
+Napi::Value Fingerprint::New(Napi::Env env, std::string bytes) {
   auto ctx = env.GetInstanceData<Context>();
   auto ft = ctx->fingerprint.New({});
   auto raw = Napi::ObjectWrap<Fingerprint>::Unwrap(ft);
