@@ -40,6 +40,10 @@ PexSearch::PexSearch(const Napi::CallbackInfo& info) : Napi::ObjectWrap<PexSearc
 }
 
 PexSearch::~PexSearch() {
+  if (!client_) {
+    return;
+  }
+
   AE_Lock();
   AE_Client_Delete(&client_);
   AE_Unlock();

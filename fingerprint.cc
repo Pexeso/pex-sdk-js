@@ -1,6 +1,7 @@
 // Copyright 2023 Pexeso Inc. All rights reserved.
 
 #include "fingerprint.h"
+
 #include "context.h"
 
 Napi::Value Fingerprint::New(Napi::Env env, std::string bytes) {
@@ -20,10 +21,6 @@ Napi::Object Fingerprint::Init(Napi::Env env, Napi::Object exports) {
 
   exports.Set("Fingerprint", func);
   return exports;
-}
-
-Fingerprint::Fingerprint(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Fingerprint>(info) {
-  // do nothing
 }
 
 Napi::Value Fingerprint::Dump(const Napi::CallbackInfo& info) {
