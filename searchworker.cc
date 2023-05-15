@@ -12,7 +12,7 @@ SearchWorker::~SearchWorker() {
 
 void SearchWorker::Execute() {
   ExecuteStartSearch();
-  if (!IsRejected()) {
+  if (!Failed()) {
     ExecuteCheckSearch();
   }
 }
@@ -25,25 +25,25 @@ void SearchWorker::ExecuteStartSearch() {
 
   auto status = AE_Status_New();
   if (!status) {
-    return Reject(1, "out of memory");  // TODO: handle error
+    return OOM();
   }
   defer.Add(std::bind(AE_Status_Delete, &status));
 
   auto request = AE_StartSearchRequest_New();
   if (!request) {
-    return Reject(1, "out of memory");  // TODO: handle error
+    return OOM();
   }
   defer.Add(std::bind(AE_StartSearchRequest_Delete, &request));
 
   auto result = AE_StartSearchResult_New();
   if (!result) {
-    return Reject(1, "out of memory");  // TODO: handle error
+    return OOM();
   }
   defer.Add(std::bind(AE_StartSearchResult_Delete, &result));
 
   auto buffer = AE_Buffer_New();
   if (!buffer) {
-    return Reject(1, "out of memory");  // TODO: handle error
+    return OOM();
   }
   defer.Add(std::bind(AE_Buffer_Delete, &buffer));
 
@@ -51,12 +51,12 @@ void SearchWorker::ExecuteStartSearch() {
 
   AE_StartSearchRequest_SetFingerprint(request, buffer, status);
   if (!AE_Status_OK(status)) {
-    return Reject(status);
+    return Fail(status);
   }
 
   AE_StartSearch(client_, request, result, status);
   if (!AE_Status_OK(status)) {
-    return Reject(status);
+    return Fail(status);
   }
 
   lookup_id_ = AE_StartSearchResult_GetLookupID(result);
@@ -70,13 +70,13 @@ void SearchWorker::ExecuteCheckSearch() {
 
   auto status = AE_Status_New();
   if (!status) {
-    return Reject(1, "out of memory");  // TODO: handle error
+    return OOM();
   }
   defer.Add(std::bind(AE_Status_Delete, &status));
 
   auto request = AE_CheckSearchRequest_New();
   if (!request) {
-    return Reject(1, "out of memory");  // TODO: handle error
+    return OOM();
   }
   defer.Add(std::bind(AE_CheckSearchRequest_Delete, &request));
 
@@ -84,12 +84,12 @@ void SearchWorker::ExecuteCheckSearch() {
 
   result_ = AE_CheckSearchResult_New();
   if (!result_) {
-    return Reject(1, "out of memory");  // TODO: handle error
+    return OOM();
   }
 
   AE_CheckSearch(client_, request, result_, status);
   if (!AE_Status_OK(status)) {
-    return Reject(status);
+    return Fail(status);
   }
 }
 
@@ -109,21 +109,21 @@ Napi::Value SearchWorker::Resolve() {
 
   auto status = AE_Status_New();
   if (!status) {
-    Reject(1, "out of memory");
+    OOM();
     return Env().Undefined();
   }
   defer.Add(std::bind(AE_Status_Delete, &status));
 
   auto match = AE_SearchMatch_New();
   if (!match) {
-    Reject(1, "out of memory");
+    OOM();
     return Env().Undefined();
   }
   defer.Add(std::bind(AE_SearchMatch_Delete, &match));
 
   auto asset = AE_Asset_New();
   if (!asset) {
-    Reject(1, "out of memory");
+    OOM();
     return Env().Undefined();
   }
   defer.Add(std::bind(AE_Asset_Delete, &asset));
@@ -153,7 +153,7 @@ Napi::Value SearchWorker::Resolve() {
 
     AE_SearchMatch_GetAsset(match, asset, status);
     if (!AE_Status_OK(status)) {
-      Reject(status);
+      Fail(status);
       return Env().Undefined();
     }
 

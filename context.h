@@ -8,6 +8,7 @@
 struct Context {
   Napi::FunctionReference pex_search;
   Napi::FunctionReference fingerprint;
+  Napi::FunctionReference error;
 };
 
 #endif  // _CONTEXT_H

@@ -1,32 +1,43 @@
 // Copyright 2023 Pexeso Inc. All rights reserved.
 
 #include "baseworker.h"
+#include "error.h"
 
-void BaseWorker::Reject(const AE_Status* status) {
-  Reject(AE_Status_GetCode(status), AE_Status_GetMessage(status));
+void BaseWorker::Fail(const AE_Status* status) {
+  Fail(AE_Status_GetCode(status), AE_Status_GetMessage(status));
 }
 
-void BaseWorker::Reject(int code, const std::string& message) {
+void BaseWorker::Fail(int code, const std::string& message) {
   status_code_ = code;
-  SetError(message);
+  status_message_ = message;
 }
 
-bool BaseWorker::IsRejected() {
+bool BaseWorker::Failed() {
   return status_code_ != 0;
 }
 
 void BaseWorker::OnOK() {
   auto val = Resolve();
-  if (IsRejected()) {
-    deferred_.Reject(Napi::String::New(Env(), "BAD SHIT"));  // TODO
+  if (Failed()) {
+    Reject();
     return;
   }
   deferred_.Resolve(val);
 }
 
 void BaseWorker::OnError(const Napi::Error& error) {
-  if (status_code_ == 0) {  // TODO: change to constants when possible
-    status_code_ = 7;
+  if (status_code_ == 0) {
+    status_code_ = ErrorCode::INTERNAL_ERROR;
   }
-  deferred_.Reject(error.Value());
+  status_message_ = error.Message();
+  Reject();
+}
+
+void BaseWorker::Reject() {
+  auto err = Error::New(Env(), status_code_, status_message_);
+  deferred_.Reject(err);
+}
+
+void BaseWorker::OOM() {
+  Fail(ErrorCode::OUT_OF_MEMORY, "out of memory");
 }

@@ -15,16 +15,20 @@ class BaseWorker : public Napi::AsyncWorker {
 
   virtual Napi::Value Resolve() = 0;
 
-  void Reject(const AE_Status* status);
-  void Reject(int code, const std::string& msg);
-  bool IsRejected();
+  void Fail(const AE_Status* status);
+  void Fail(int code, const std::string& msg);
+  bool Failed();
+
+  void OOM();
 
  private:
   void OnOK() final override;
   void OnError(const Napi::Error& error) final override;
+  void Reject();
 
   Napi::Promise::Deferred deferred_;
   int status_code_ = 0;
+  std::string status_message_;
 };
 
 #endif  // _BASEWORKER_H_

@@ -32,7 +32,8 @@ Napi::Object PexSearch::Init(Napi::Env env, Napi::Object exports) {
 
 PexSearch::PexSearch(const Napi::CallbackInfo& info) : Napi::ObjectWrap<PexSearch>(info) {
   if (info.Length() != 2 || !info[0].IsString() || !info[1].IsString()) {
-    throw Napi::Error::New(info.Env(), "Invalid arguments");
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return;
   }
 
   client_id_ = info[0].As<Napi::String>();
@@ -60,14 +61,16 @@ Napi::Value PexSearch::Connect(const Napi::CallbackInfo& info) {
 
 Napi::Value PexSearch::StartSearch(const Napi::CallbackInfo& info) {
   if (info.Length() != 1 || !info[0].IsObject()) {
-    throw Napi::Error::New(info.Env(), "Invalid arguments");
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
   }
 
   auto arg = info[0].As<Napi::Object>();
   auto ctx = info.Env().GetInstanceData<Context>();
 
   if (!arg.InstanceOf(ctx->fingerprint.Value())) {
-    throw Napi::Error::New(info.Env(), "Invalid arguments");
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
   }
 
   auto ft = Napi::ObjectWrap<Fingerprint>::Unwrap(arg);
@@ -80,7 +83,8 @@ Napi::Value PexSearch::StartSearch(const Napi::CallbackInfo& info) {
 
 Napi::Value PexSearch::FingerprintFile(const Napi::CallbackInfo& info) {
   if (info.Length() != 1 || !info[0].IsString()) {
-    throw Napi::Error::New(info.Env(), "Invalid arguments");
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
   }
 
   auto path = info[0].As<Napi::String>();
@@ -92,5 +96,6 @@ Napi::Value PexSearch::FingerprintFile(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value PexSearch::FingerprintBuffer(const Napi::CallbackInfo& info) {
-  throw Napi::Error::New(info.Env(), "Not implemented");
+  Napi::Error::New(info.Env(), "Not implemented").ThrowAsJavaScriptException();
+  return info.Env().Undefined();
 }
