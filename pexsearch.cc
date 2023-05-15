@@ -9,6 +9,8 @@
 
 #include "connectworker.h"
 #include "fingerprintworker.h"
+#include "fingerprint.h"
+#include "searchworker.h"
 #include "context.h"
 
 Napi::Object PexSearch::Init(Napi::Env env, Napi::Object exports) {
@@ -53,7 +55,23 @@ Napi::Value PexSearch::Connect(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value PexSearch::StartSearch(const Napi::CallbackInfo& info) {
-  throw Napi::Error::New(info.Env(), "Not implemented");
+  if (info.Length() != 1 || !info[0].IsObject()) {
+    throw Napi::Error::New(info.Env(), "Invalid arguments");
+  }
+
+  auto arg = info[0].As<Napi::Object>();
+  auto ctx = info.Env().GetInstanceData<Context>();
+
+  if (!arg.InstanceOf(ctx->fingerprint.Value())) {
+    throw Napi::Error::New(info.Env(), "Invalid arguments");
+  }
+
+  auto ft = Napi::ObjectWrap<Fingerprint>::Unwrap(arg);
+
+  auto d = Napi::Promise::Deferred::New(info.Env());
+  auto w = new SearchWorker(d, client_, ft);
+  w->Queue();
+  return d.Promise();
 }
 
 Napi::Value PexSearch::FingerprintFile(const Napi::CallbackInfo& info) {

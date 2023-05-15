@@ -45,7 +45,7 @@ void ConnectWorker::Execute() {
   }
 
   // TODO: remove this after I'm done testing
-  AE_Mockserver_InitClient(*client_p_, "", status);
+  AE_Mockserver_InitClient(*client_p_, nullptr, status);
   if (!status) {
     return Reject(1, "failed to mock the client");
   }
