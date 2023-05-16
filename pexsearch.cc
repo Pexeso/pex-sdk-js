@@ -88,10 +88,10 @@ Napi::Value PexSearch::FingerprintFile(const Napi::CallbackInfo& info) {
   }
 
   auto arg = info[0].As<Napi::String>();
-  std::string path(arg);
+  std::string str(arg);
 
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new FingerprintWorker(d, path, true);
+  auto w = new FingerprintWorker(d, std::move(str), true);
   w->Queue();
   return d.Promise();
 }
