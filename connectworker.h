@@ -17,7 +17,7 @@ class ConnectWorker final : public BaseWorker {
         client_p_(client_p),
         client_id_(std::move(client_id)),
         client_secret_(std::move(client_secret)) {}
-  virtual ~ConnectWorker();
+  ~ConnectWorker();
 
   void Execute() override;
   Napi::Value Resolve() override;

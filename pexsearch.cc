@@ -24,7 +24,7 @@ Napi::Object PexSearch::Init(Napi::Env env, Napi::Object exports) {
                   });
 
   auto ctx = env.GetInstanceData<Context>();
-  ctx->pex_search = Napi::Persistent(func);
+  ctx->pexsearch = Napi::Persistent(func);
 
   exports.Set("PexSearch", func);
   return exports;

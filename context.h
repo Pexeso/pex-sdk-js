@@ -6,7 +6,7 @@
 #include <napi.h>
 
 struct Context {
-  Napi::FunctionReference pex_search;
+  Napi::FunctionReference pexsearch;
   Napi::FunctionReference fingerprint;
   Napi::FunctionReference error;
 };

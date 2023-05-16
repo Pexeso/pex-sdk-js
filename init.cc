@@ -3,9 +3,10 @@
 #include <napi.h>
 
 #include "context.h"
-#include "fingerprint.h"
-#include "pexsearch.h"
 #include "error.h"
+#include "fingerprint.h"
+#include "mock.h"
+#include "pexsearch.h"
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   env.SetInstanceData(new Context);
@@ -13,6 +14,9 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports = Fingerprint::Init(env, exports);
   exports = PexSearch::Init(env, exports);
   exports = Error::Init(env, exports);
+
+  exports.Set("mock", Napi::Function::New(env, Mock));
+
   return exports;
 }
 

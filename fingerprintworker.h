@@ -13,7 +13,6 @@ class FingerprintWorker final : public BaseWorker {
  public:
   FingerprintWorker(Napi::Promise::Deferred& deferred, std::string input, bool is_file)
       : BaseWorker(deferred), input_(std::move(input)), is_file_(is_file) {}
-  virtual ~FingerprintWorker() override {}
 
   void Execute() override;
   Napi::Value Resolve() override;

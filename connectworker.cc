@@ -4,7 +4,6 @@
 
 #include <pex/ae/sdk/init.h>
 #include <pex/ae/sdk/lock.h>
-#include <pex/ae/sdk/mockserver.h>
 
 #include "defer.h"
 #include "error.h"
@@ -29,7 +28,7 @@ void ConnectWorker::Execute() {
   AE_Lock();
   defer.Add(AE_Unlock);
 
-  AE_Status* status = AE_Status_New();
+  auto status = AE_Status_New();
   if (!status) {
     return OOM();
   }
@@ -42,12 +41,6 @@ void ConnectWorker::Execute() {
 
   AE_Client_InitType(*client_p_, AE_PEX_SEARCH, client_id_.c_str(), client_secret_.c_str(), status);
   if (!AE_Status_OK(status)) {
-    return Fail(status);
-  }
-
-  // TODO: remove this after I'm done testing
-  AE_Mockserver_InitClient(*client_p_, nullptr, status);
-  if (!status) {
     return Fail(status);
   }
 }

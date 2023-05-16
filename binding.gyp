@@ -11,7 +11,8 @@
         "init.cc",
         "pexsearch.cc",
         "searchworker.cc",
-        "error.cc"
+        "error.cc",
+        "mock.cc"
       ],
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")"

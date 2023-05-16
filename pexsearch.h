@@ -7,11 +7,13 @@
 
 #include <pex/ae/sdk/client.h>
 
-class PexSearch : public Napi::ObjectWrap<PexSearch> {
+class PexSearch final : public Napi::ObjectWrap<PexSearch> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   PexSearch(const Napi::CallbackInfo& info);
   ~PexSearch();
+
+  AE_Client* client() const { return client_; }
 
  private:
   Napi::Value Connect(const Napi::CallbackInfo& info);
