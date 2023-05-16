@@ -15,6 +15,7 @@
   "license": "ISC",
   "gypfile": true,
   "dependencies": {
-    "node-addon-api": "*"
+    "node-addon-api": "6.1.0",
+    "bindings": "1.5.0"
   }
 }
