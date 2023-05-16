@@ -11,9 +11,10 @@
 
 class ConnectWorker final : public BaseWorker {
  public:
-  ConnectWorker(Napi::Promise::Deferred& deferred, AE_Client** client_p, std::string client_id,
-                std::string client_secret)
+  ConnectWorker(Napi::Promise::Deferred& deferred, AE_ClientType client_type, AE_Client** client_p,
+                std::string client_id, std::string client_secret)
       : BaseWorker(deferred),
+        client_type_(client_type),
         client_p_(client_p),
         client_id_(std::move(client_id)),
         client_secret_(std::move(client_secret)) {}
@@ -23,6 +24,7 @@ class ConnectWorker final : public BaseWorker {
   Napi::Value Resolve() override;
 
  private:
+  AE_ClientType client_type_;
   AE_Client** client_p_ = nullptr;
   std::string client_id_;
   std::string client_secret_;

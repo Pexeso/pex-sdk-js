@@ -19,7 +19,7 @@ void ConnectWorker::Execute() {
   int status_code;
   char status_message[100];
 
-  AE_Init(client_id_.c_str(), client_secret_.c_str(), &status_code, status_message,
+  AE_Init(client_id_.data(), client_secret_.data(), &status_code, status_message,
           sizeof(status_message));
   if (status_code != ErrorCode::OK) {
     return Fail(status_code, "failed to init the library");
@@ -39,7 +39,7 @@ void ConnectWorker::Execute() {
     return OOM();
   }
 
-  AE_Client_InitType(*client_p_, AE_PEX_SEARCH, client_id_.c_str(), client_secret_.c_str(), status);
+  AE_Client_InitType(*client_p_, client_type_, client_id_.data(), client_secret_.data(), status);
   if (!AE_Status_OK(status)) {
     return Fail(status);
   }

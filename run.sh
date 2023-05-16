@@ -3,4 +3,4 @@
 export AE_SDK_LOG_LEVEL=debug
 
 node-gyp build
-node test.js
+node test2.js

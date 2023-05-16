@@ -54,7 +54,7 @@ PexSearch::~PexSearch() {
 
 Napi::Value PexSearch::Connect(const Napi::CallbackInfo& info) {
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new ConnectWorker(d, &client_, client_id_, client_secret_);
+  auto w = new ConnectWorker(d, AE_PEX_SEARCH, &client_, client_id_, client_secret_);
   w->Queue();
   return d.Promise();
 }
@@ -82,12 +82,13 @@ Napi::Value PexSearch::StartSearch(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value PexSearch::FingerprintFile(const Napi::CallbackInfo& info) {
-  if (info.Length() != 1 || !info[0].IsString()) {
+  if (info.Length() == 0 || !info[0].IsString()) {
     Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
 
-  auto path = info[0].As<Napi::String>();
+  auto arg = info[0].As<Napi::String>();
+  std::string path(arg);
 
   auto d = Napi::Promise::Deferred::New(info.Env());
   auto w = new FingerprintWorker(d, path, true);
@@ -96,6 +97,16 @@ Napi::Value PexSearch::FingerprintFile(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value PexSearch::FingerprintBuffer(const Napi::CallbackInfo& info) {
-  Napi::Error::New(info.Env(), "Not implemented").ThrowAsJavaScriptException();
-  return info.Env().Undefined();
+  if (info.Length() == 0 || !info[0].IsBuffer()) {
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
+  }
+
+  auto arg = info[0].As<Napi::Uint8Array>();
+  std::string_view buf(reinterpret_cast<char*>(arg.Data()), arg.ByteLength());
+
+  auto d = Napi::Promise::Deferred::New(info.Env());
+  auto w = new FingerprintWorker(d, buf, false);
+  w->Queue();
+  return d.Promise();
 }

@@ -80,7 +80,7 @@ void SearchWorker::ExecuteCheckSearch() {
   }
   defer.Add(std::bind(AE_CheckSearchRequest_Delete, &request));
 
-  AE_CheckSearchRequest_SetLookupID(request, lookup_id_.c_str());
+  AE_CheckSearchRequest_SetLookupID(request, lookup_id_.data());
 
   result_ = AE_CheckSearchResult_New();
   if (!result_) {
