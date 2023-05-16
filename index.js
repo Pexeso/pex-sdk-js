@@ -1,1 +1,1 @@
-module.exports = require('build/Release/pexae.node')
+module.exports = require('bindings')('pexae.node')
