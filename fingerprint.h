@@ -5,6 +5,10 @@
 
 #include <napi.h>
 
+const auto kAudio = "audio";
+const auto kVideo = "video";
+const auto kMelody = "melody";
+
 class Fingerprint final : public Napi::ObjectWrap<Fingerprint> {
  public:
   static Napi::Value New(Napi::Env env, std::string bytes);

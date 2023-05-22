@@ -17,6 +17,10 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
   exports.Set("mock", Napi::Function::New(env, Mock));
 
+  exports.Set("AUDIO", kAudio);
+  exports.Set("VIDEO", kVideo);
+  exports.Set("MELODY", kMelody);
+
   return exports;
 }
 
