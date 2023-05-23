@@ -29,8 +29,7 @@ void FingerprintWorker::Execute() {
   defer.Add(std::bind(AE_Buffer_Delete, &out_buf));
 
   if (is_file_) {
-    AE_Fingerprint_File_For_Types(input_.data(), out_buf, status,
-                                  AE_Fingerprint_Type_All);  // TODO: specify real fingerprint type
+    AE_Fingerprint_File_For_Types(input_.data(), out_buf, status, type_);
   } else {
     AE_Buffer* in_buf = AE_Buffer_New();
     if (!in_buf) {
@@ -40,8 +39,7 @@ void FingerprintWorker::Execute() {
 
     AE_Buffer_Set(in_buf, input_.data(), input_.size());
 
-    AE_Fingerprint_Buffer_For_Types(
-        in_buf, out_buf, status, AE_Fingerprint_Type_All);  // TODO: specify real fingerprint type
+    AE_Fingerprint_Buffer_For_Types(in_buf, out_buf, status, type_);
   }
 
   if (!AE_Status_OK(status)) {

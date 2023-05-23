@@ -62,6 +62,18 @@ void SearchWorker::ExecuteStartSearch() {
   lookup_id_ = AE_StartSearchResult_GetLookupID(result);
 }
 
+static Napi::Value ConvertSegmentType(Napi::Env env, int segment_type) {
+  switch (segment_type) {
+    case 1:
+      return Napi::String::New(env, kAudio);
+    case 2:
+      return Napi::String::New(env, kVideo);
+    case 3:
+      return Napi::String::New(env, kMelody);
+  }
+  return Napi::String::New(env, "unknown");
+}
+
 void SearchWorker::ExecuteCheckSearch() {
   Defer defer;
 
@@ -146,7 +158,7 @@ Napi::Value SearchWorker::Resolve() {
       js_segment["query_end"] = query_end;
       js_segment["asset_start"] = asset_start;
       js_segment["asset_end"] = asset_end;
-      js_segment["type"] = type;
+      js_segment["type"] = ConvertSegmentType(Env(), type);
       js_segment.Freeze();
       js_segments[segments_pos - 1] = js_segment;
     }
