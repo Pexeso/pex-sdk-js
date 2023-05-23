@@ -108,8 +108,6 @@ static int GetFingerprintTypes(const Napi::CallbackInfo& info) {
     }
   }
 
-  std::cout << "FT TYPES: " << ft_types << std::endl;
-
   if (ft_types > 0) {
     return ft_types;
   }
