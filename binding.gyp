@@ -1,7 +1,7 @@
 {
   "targets": [
     {
-      "target_name": "pexae",
+      "target_name": "pex",
       "sources": [
         "baseworker.cc",
         "connectworker.cc",
