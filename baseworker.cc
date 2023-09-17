@@ -3,8 +3,8 @@
 #include "baseworker.h"
 #include "error.h"
 
-void BaseWorker::Fail(const AE_Status* status) {
-  Fail(AE_Status_GetCode(status), AE_Status_GetMessage(status));
+void BaseWorker::Fail(const Pex_Status* status) {
+  Fail(Pex_Status_GetCode(status), Pex_Status_GetMessage(status));
 }
 
 void BaseWorker::Fail(int code, const std::string& message) {

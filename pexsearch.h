@@ -5,7 +5,7 @@
 
 #include <napi.h>
 
-#include <pex/ae/sdk/client.h>
+#include <pex/sdk/client.h>
 
 class PexSearch final : public Napi::ObjectWrap<PexSearch> {
  public:
@@ -13,7 +13,7 @@ class PexSearch final : public Napi::ObjectWrap<PexSearch> {
   PexSearch(const Napi::CallbackInfo& info);
   ~PexSearch();
 
-  AE_Client* client() const { return client_; }
+  Pex_Client* client() const { return client_; }
 
  private:
   Napi::Value Connect(const Napi::CallbackInfo& info);
@@ -24,7 +24,7 @@ class PexSearch final : public Napi::ObjectWrap<PexSearch> {
   std::string client_id_;
   std::string client_secret_;
 
-  AE_Client* client_ = nullptr;
+  Pex_Client* client_ = nullptr;
 };
 
 #endif  // _PEXSEARCH_H_

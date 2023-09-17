@@ -5,7 +5,7 @@
 
 #include <napi.h>
 
-#include <pex/ae/sdk/status.h>
+#include <pex/sdk/status.h>
 
 class BaseWorker : public Napi::AsyncWorker {
  protected:
@@ -15,7 +15,7 @@ class BaseWorker : public Napi::AsyncWorker {
 
   virtual Napi::Value Resolve() = 0;
 
-  void Fail(const AE_Status* status);
+  void Fail(const Pex_Status* status);
   void Fail(int code, const std::string& msg);
   bool Failed();
 
