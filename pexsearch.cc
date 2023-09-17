@@ -4,8 +4,8 @@
 
 #include <iostream>
 
-#include <pex/ae/sdk/init.h>
-#include <pex/ae/sdk/lock.h>
+#include <pex/sdk/init.h>
+#include <pex/sdk/lock.h>
 
 #include "connectworker.h"
 #include "fingerprintworker.h"
@@ -45,16 +45,16 @@ PexSearch::~PexSearch() {
     return;
   }
 
-  AE_Lock();
-  AE_Client_Delete(&client_);
-  AE_Unlock();
+  Pex_Lock();
+  Pex_Client_Delete(&client_);
+  Pex_Unlock();
 
-  AE_Cleanup();
+  Pex_Cleanup();
 }
 
 Napi::Value PexSearch::Connect(const Napi::CallbackInfo& info) {
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new ConnectWorker(d, AE_PEX_SEARCH, &client_, client_id_, client_secret_);
+  auto w = new ConnectWorker(d, Pex_PEX_SEARCH, &client_, client_id_, client_secret_);
   w->Queue();
   return d.Promise();
 }
@@ -99,11 +99,11 @@ static int GetFingerprintTypes(const Napi::CallbackInfo& info) {
 
       std::string str = val.ToString();
       if (str == kAudio) {
-        ft_types |= AE_Fingerprint_Type_Audio;
+        ft_types |= Pex_Fingerprint_Type_Audio;
       } else if (str == kVideo) {
-        ft_types |= AE_Fingerprint_Type_Video;
+        ft_types |= Pex_Fingerprint_Type_Video;
       } else if (str == kMelody) {
-        ft_types |= AE_Fingerprint_Type_Melody;
+        ft_types |= Pex_Fingerprint_Type_Melody;
       }
     }
   }
@@ -111,7 +111,7 @@ static int GetFingerprintTypes(const Napi::CallbackInfo& info) {
   if (ft_types > 0) {
     return ft_types;
   }
-  return AE_Fingerprint_Type_All;
+  return Pex_Fingerprint_Type_All;
 }
 
 Napi::Value PexSearch::FingerprintFile(const Napi::CallbackInfo& info) {

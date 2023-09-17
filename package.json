@@ -1,5 +1,5 @@
 {
-  "name": "ae-sdk",
+  "name": "pex-sdk",
   "version": "1.0.0",
   "description": "Pex SDK for NodeJS",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "github.com/Pexeso/ae-sdk-js"
+    "url": "github.com/Pexeso/pex-sdk-js"
   },
   "author": "",
   "license": "ISC",

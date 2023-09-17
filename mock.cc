@@ -2,8 +2,8 @@
 
 #include "fingerprint.h"
 
-#include <pex/ae/sdk/lock.h>
-#include <pex/ae/sdk/mockserver.h>
+#include <pex/sdk/lock.h>
+#include <pex/sdk/mockserver.h>
 
 #include "baseworker.h"
 #include "context.h"
@@ -12,29 +12,29 @@
 
 class MockWorker final : public BaseWorker {
  public:
-  MockWorker(Napi::Promise::Deferred& deferred, AE_Client* client)
+  MockWorker(Napi::Promise::Deferred& deferred, Pex_Client* client)
       : BaseWorker(deferred), client_(client) {}
 
   void Execute() override;
   Napi::Value Resolve() override;
 
  private:
-  AE_Client* client_;
+  Pex_Client* client_;
 };
 
 void MockWorker::Execute() {
   Defer defer;
 
-  AE_Lock();
-  defer.Add(AE_Unlock);
+  Pex_Lock();
+  defer.Add(Pex_Unlock);
 
-  auto status = AE_Status_New();
+  auto status = Pex_Status_New();
   if (!status) {
     return OOM();
   }
-  defer.Add(std::bind(AE_Status_Delete, &status));
+  defer.Add(std::bind(Pex_Status_Delete, &status));
 
-  AE_Mockserver_InitClient(client_, nullptr, status);
+  Pex_Mockserver_InitClient(client_, nullptr, status);
   if (!status) {
     return Fail(status);
   }

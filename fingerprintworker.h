@@ -5,7 +5,7 @@
 
 #include <napi.h>
 
-#include <pex/ae/sdk/fingerprint.h>
+#include <pex/sdk/fingerprint.h>
 
 #include "baseworker.h"
 
