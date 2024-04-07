@@ -2,14 +2,10 @@
 
 #include "pexsearch.h"
 
-#include <iostream>
-
-#include <pex/ae/sdk/init.h>
-#include <pex/ae/sdk/lock.h>
+#include <pex/sdk/init.h>
+#include <pex/sdk/lock.h>
 
 #include "connectworker.h"
-#include "fingerprintworker.h"
-#include "fingerprint.h"
 #include "searchworker.h"
 #include "context.h"
 
@@ -45,16 +41,16 @@ PexSearch::~PexSearch() {
     return;
   }
 
-  AE_Lock();
-  AE_Client_Delete(&client_);
-  AE_Unlock();
+  Pex_Lock();
+  Pex_Client_Delete(&client_);
+  Pex_Unlock();
 
-  AE_Cleanup();
+  Pex_Cleanup();
 }
 
 Napi::Value PexSearch::Connect(const Napi::CallbackInfo& info) {
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new ConnectWorker(d, AE_PEX_SEARCH, &client_, client_id_, client_secret_);
+  auto w = new ConnectWorker(d, Pex_PEX_SEARCH, &client_, client_id_, client_secret_);
   w->Queue();
   return d.Promise();
 }
@@ -68,88 +64,39 @@ Napi::Value PexSearch::StartSearch(const Napi::CallbackInfo& info) {
   auto arg = info[0].As<Napi::Object>();
   auto ctx = info.Env().GetInstanceData<Context>();
 
-  if (!arg.InstanceOf(ctx->fingerprint.Value())) {
-    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
-    return info.Env().Undefined();
-  }
-
-  auto ft = Napi::ObjectWrap<Fingerprint>::Unwrap(arg);
-
-  auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new SearchWorker(d, client_, ft);
-  w->Queue();
-  return d.Promise();
-}
-
-static int GetFingerprintTypes(const Napi::CallbackInfo& info) {
-  int ft_types = 0;
-  if (info.Length() > 1) {
-    if (!info[1].IsArray()) {
-      Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
-      return 0;
-    }
-
-    auto array = info[1].As<Napi::Array>();
-    for (uint32_t i = 0; i < array.Length(); i++) {
-      Napi::Value val = array[i];
-      if (!val.IsString()) {
-        Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
-        return 0;
-      }
-
-      std::string str = val.ToString();
-      if (str == kAudio) {
-        ft_types |= AE_Fingerprint_Type_Audio;
-      } else if (str == kVideo) {
-        ft_types |= AE_Fingerprint_Type_Video;
-      } else if (str == kMelody) {
-        ft_types |= AE_Fingerprint_Type_Melody;
-      }
+  Napi::Array props = arg.GetPropertyNames();
+  for (uint32_t i = 0; i < props.Length(); i++) {
+    std::string prop = props.Get(i).ToString();
+    if (prop != "fingerprint" && prop != "type") {
+      Napi::Error::New(info.Env(), "Unrecognized option").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
     }
   }
 
-  if (ft_types > 0) {
-    return ft_types;
-  }
-  return AE_Fingerprint_Type_All;
-}
-
-Napi::Value PexSearch::FingerprintFile(const Napi::CallbackInfo& info) {
-  if (info.Length() == 0 || !info[0].IsString()) {
+  auto ft_arg = arg.Get("fingerprint");
+  if (!ft_arg.IsObject() || !ft_arg.ToObject().InstanceOf(ctx->fingerprint.Value())) {
     Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
+  auto ft = Napi::ObjectWrap<Fingerprint>::Unwrap(ft_arg.ToObject());
 
-  auto arg = info[0].As<Napi::String>();
-  std::string str(arg);
+  auto search_type = Pex_SearchType_Default;
+  auto search_type_arg = arg.Get("type");
 
-  auto ft_types = GetFingerprintTypes(info);
-  if (info.Env().IsExceptionPending()) {
-    return info.Env().Undefined();
+  if (search_type_arg.IsString()) {
+    std::string str = search_type_arg.ToString();
+    if (str == kFindMatches) {
+      search_type = Pex_SearchType_FindMatches;
+    } else if (str == kIdentifyMusic) {
+      search_type = Pex_SearchType_IdentifyMusic;
+    } else {
+      Napi::Error::New(info.Env(), "Invalid search type").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
   }
 
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new FingerprintWorker(d, std::move(str), true, ft_types);
-  w->Queue();
-  return d.Promise();
-}
-
-Napi::Value PexSearch::FingerprintBuffer(const Napi::CallbackInfo& info) {
-  if (info.Length() == 0 || !info[0].IsBuffer()) {
-    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
-    return info.Env().Undefined();
-  }
-
-  auto arg = info[0].As<Napi::Uint8Array>();
-  std::string_view buf(reinterpret_cast<char*>(arg.Data()), arg.ByteLength());
-
-  auto ft_types = GetFingerprintTypes(info);
-  if (info.Env().IsExceptionPending()) {
-    return info.Env().Undefined();
-  }
-
-  auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new FingerprintWorker(d, buf, false, ft_types);
+  auto w = new SearchWorker(d, client_, ft, search_type);
   w->Queue();
   return d.Promise();
 }

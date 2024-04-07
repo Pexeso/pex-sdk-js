@@ -1,20 +1,21 @@
 // Copyright 2023 Pexeso Inc. All rights reserved.
 
-#ifndef _SEARCHOWORKER_H_
-#define _SEARCHOWORKER_H_
+#ifndef _SEARCHWORKER_H_
+#define _SEARCHWORKER_H_
 
 #include <napi.h>
 
-#include <pex/ae/sdk/client.h>
-#include <pex/ae/sdk/search.h>
+#include <pex/sdk/client.h>
+#include <pex/sdk/search.h>
 
 #include "baseworker.h"
 #include "fingerprint.h"
 
 class SearchWorker final : public BaseWorker {
  public:
-  SearchWorker(Napi::Promise::Deferred& deferred, AE_Client* client, Fingerprint* ft)
-      : BaseWorker(deferred), client_(client), ft_(ft) {}
+  SearchWorker(Napi::Promise::Deferred& deferred, Pex_Client* client, Fingerprint* ft,
+               Pex_SearchType search_type)
+      : BaseWorker(deferred), client_(client), ft_(ft), search_type_(search_type) {}
   virtual ~SearchWorker() override;
 
   void ExecuteStartSearch();
@@ -23,10 +24,11 @@ class SearchWorker final : public BaseWorker {
   Napi::Value Resolve() override;
 
  private:
-  AE_Client* client_;
+  Pex_Client* client_;
   Fingerprint* ft_;
-  std::string lookup_id_;
-  AE_CheckSearchResult* result_ = nullptr;
+  Pex_SearchType search_type_;
+  std::vector<std::string> lookup_ids_;
+  Pex_CheckSearchResult* result_ = nullptr;
 };
 
-#endif  // _SEARCHOWORKER_H_
+#endif  // _SEARCHWORKER_H_

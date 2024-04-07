@@ -2,9 +2,9 @@
 
 #include "fingerprintworker.h"
 
-#include <pex/ae/sdk/buffer.h>
-#include <pex/ae/sdk/fingerprint.h>
-#include <pex/ae/sdk/lock.h>
+#include <pex/sdk/buffer.h>
+#include <pex/sdk/fingerprint.h>
+#include <pex/sdk/lock.h>
 
 #include "defer.h"
 #include "fingerprint.h"
@@ -13,41 +13,41 @@
 void FingerprintWorker::Execute() {
   Defer defer;
 
-  AE_Lock();
-  defer.Add(AE_Unlock);
+  Pex_Lock();
+  defer.Add(Pex_Unlock);
 
-  AE_Status* status = AE_Status_New();
+  Pex_Status* status = Pex_Status_New();
   if (!status) {
     return OOM();
   }
-  defer.Add(std::bind(AE_Status_Delete, &status));
+  defer.Add(std::bind(Pex_Status_Delete, &status));
 
-  AE_Buffer* out_buf = AE_Buffer_New();
+  Pex_Buffer* out_buf = Pex_Buffer_New();
   if (!out_buf) {
     return OOM();
   }
-  defer.Add(std::bind(AE_Buffer_Delete, &out_buf));
+  defer.Add(std::bind(Pex_Buffer_Delete, &out_buf));
 
   if (is_file_) {
-    AE_Fingerprint_File_For_Types(input_.data(), out_buf, status, type_);
+    Pex_Fingerprint_File(input_.data(), out_buf, status, type_);
   } else {
-    AE_Buffer* in_buf = AE_Buffer_New();
+    Pex_Buffer* in_buf = Pex_Buffer_New();
     if (!in_buf) {
       return OOM();
     }
-    defer.Add(std::bind(AE_Buffer_Delete, &in_buf));
+    defer.Add(std::bind(Pex_Buffer_Delete, &in_buf));
 
-    AE_Buffer_Set(in_buf, input_.data(), input_.size());
+    Pex_Buffer_Set(in_buf, input_.data(), input_.size());
 
-    AE_Fingerprint_Buffer_For_Types(in_buf, out_buf, status, type_);
+    Pex_Fingerprint_Buffer(in_buf, out_buf, status, type_);
   }
 
-  if (!AE_Status_OK(status)) {
+  if (!Pex_Status_OK(status)) {
     return Fail(status);
   }
 
-  auto data = static_cast<const char*>(AE_Buffer_GetData(out_buf));
-  auto size = AE_Buffer_GetSize(out_buf);
+  auto data = static_cast<const char*>(Pex_Buffer_GetData(out_buf));
+  auto size = Pex_Buffer_GetSize(out_buf);
   output_.assign(data, size);
 }
 
