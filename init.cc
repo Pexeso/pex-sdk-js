@@ -21,6 +21,9 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("VIDEO", kVideo);
   exports.Set("MELODY", kMelody);
 
+  exports.Set("FIND_MATCHES", kFindMatches);
+  exports.Set("IDENTIFY_MUSIC", kIdentifyMusic);
+
   return exports;
 }
 

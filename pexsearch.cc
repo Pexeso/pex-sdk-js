@@ -64,15 +64,39 @@ Napi::Value PexSearch::StartSearch(const Napi::CallbackInfo& info) {
   auto arg = info[0].As<Napi::Object>();
   auto ctx = info.Env().GetInstanceData<Context>();
 
-  if (!arg.InstanceOf(ctx->fingerprint.Value())) {
+  Napi::Array props = arg.GetPropertyNames();
+  for (uint32_t i = 0; i < props.Length(); i++) {
+    std::string prop = props.Get(i).ToString();
+    if (prop != "fingerprint" && prop != "type") {
+      Napi::Error::New(info.Env(), "Unrecognized option").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
+  }
+
+  auto ft_arg = arg.Get("fingerprint");
+  if (!ft_arg.IsObject() || !ft_arg.ToObject().InstanceOf(ctx->fingerprint.Value())) {
     Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
+  auto ft = Napi::ObjectWrap<Fingerprint>::Unwrap(ft_arg.ToObject());
 
-  auto ft = Napi::ObjectWrap<Fingerprint>::Unwrap(arg);
+  auto search_type = Pex_SearchType_Default;
+  auto search_type_arg = arg.Get("type");
+
+  if (search_type_arg.IsString()) {
+    std::string str = search_type_arg.ToString();
+    if (str == kFindMatches) {
+      search_type = Pex_SearchType_FindMatches;
+    } else if (str == kIdentifyMusic) {
+      search_type = Pex_SearchType_IdentifyMusic;
+    } else {
+      Napi::Error::New(info.Env(), "Invalid search type").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
+  }
 
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new SearchWorker(d, client_, ft);
+  auto w = new SearchWorker(d, client_, ft, search_type);
   w->Queue();
   return d.Promise();
 }

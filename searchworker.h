@@ -13,8 +13,9 @@
 
 class SearchWorker final : public BaseWorker {
  public:
-  SearchWorker(Napi::Promise::Deferred& deferred, Pex_Client* client, Fingerprint* ft)
-      : BaseWorker(deferred), client_(client), ft_(ft) {}
+  SearchWorker(Napi::Promise::Deferred& deferred, Pex_Client* client, Fingerprint* ft,
+               Pex_SearchType search_type)
+      : BaseWorker(deferred), client_(client), ft_(ft), search_type_(search_type) {}
   virtual ~SearchWorker() override;
 
   void ExecuteStartSearch();
@@ -25,6 +26,7 @@ class SearchWorker final : public BaseWorker {
  private:
   Pex_Client* client_;
   Fingerprint* ft_;
+  Pex_SearchType search_type_;
   std::vector<std::string> lookup_ids_;
   Pex_CheckSearchResult* result_ = nullptr;
 };

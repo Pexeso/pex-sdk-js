@@ -54,6 +54,10 @@ void SearchWorker::ExecuteStartSearch() {
     return Fail(status);
   }
 
+  if (search_type_ != Pex_SearchType_Default) {
+    Pex_StartSearchRequest_SetType(request, search_type_);
+  }
+
   Pex_StartSearch(client_, request, result, status);
   if (!Pex_Status_OK(status)) {
     return Fail(status);

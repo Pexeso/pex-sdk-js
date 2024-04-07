@@ -9,6 +9,9 @@
 
 #include "fingerprinter.h"
 
+const auto kFindMatches = "find_matches";
+const auto kIdentifyMusic = "identify_music";
+
 class PexSearch final : public Napi::ObjectWrap<PexSearch>, public Fingerprinter {
   friend class Fingerprinter;
 
