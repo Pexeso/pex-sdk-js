@@ -11,6 +11,8 @@
         "fingerprintworker.cc",
         "init.cc",
         "pexsearch.cc",
+        "ingestworker.cc",
+        "privatesearch.cc",
         "searchworker.cc",
         "error.cc",
         "mock.cc"
@@ -20,6 +22,7 @@
       ],
       "libraries": [
         "-Wl,-rpath,/usr/local/lib",
+        "-Wl,-rpath,/usr/lib",
         "<!(pkg-config --libs pexsdk)"
       ],
       "defines": [

@@ -7,6 +7,7 @@
 
 struct Context {
   Napi::FunctionReference pexsearch;
+  Napi::FunctionReference privatesearch;
   Napi::FunctionReference fingerprint;
   Napi::FunctionReference error;
 };

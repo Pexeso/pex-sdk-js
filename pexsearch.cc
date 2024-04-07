@@ -15,8 +15,8 @@ Napi::Object PexSearch::Init(Napi::Env env, Napi::Object exports) {
                   {
                       InstanceMethod("connect", &PexSearch::Connect),
                       InstanceMethod("startSearch", &PexSearch::StartSearch),
-                      InstanceMethod("fingerprintFile", &Fingerprinter::FingerprintFile),
-                      InstanceMethod("fingerprintBuffer", &Fingerprinter::FingerprintBuffer),
+                      InstanceMethod("fingerprintFile", &PexSearch::FingerprintFile),
+                      InstanceMethod("fingerprintBuffer", &PexSearch::FingerprintBuffer),
                   });
 
   auto ctx = env.GetInstanceData<Context>();

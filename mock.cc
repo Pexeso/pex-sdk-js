@@ -9,6 +9,7 @@
 #include "context.h"
 #include "defer.h"
 #include "pexsearch.h"
+#include "privatesearch.h"
 
 class MockWorker final : public BaseWorker {
  public:
@@ -55,13 +56,18 @@ Napi::Value Mock(const Napi::CallbackInfo& info) {
   auto arg = info[0].As<Napi::Object>();
   auto ctx = info.Env().GetInstanceData<Context>();
 
-  if (!arg.InstanceOf(ctx->pexsearch.Value())) {
+  Pex_Client* client = nullptr;
+
+  if (arg.InstanceOf(ctx->pexsearch.Value())) {
+    auto search = Napi::ObjectWrap<PexSearch>::Unwrap(arg);
+    client = search->client();
+  } else if (arg.InstanceOf(ctx->privatesearch.Value())) {
+    auto search = Napi::ObjectWrap<PrivateSearch>::Unwrap(arg);
+    client = search->client();
+  } else {
     Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
-
-  auto search = Napi::ObjectWrap<PexSearch>::Unwrap(arg);
-  auto client = search->client();
 
   auto d = Napi::Promise::Deferred::New(info.Env());
   auto w = new MockWorker(d, client);

@@ -7,12 +7,14 @@
 #include "fingerprint.h"
 #include "mock.h"
 #include "pexsearch.h"
+#include "privatesearch.h"
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   env.SetInstanceData(new Context);
 
   exports = Fingerprint::Init(env, exports);
   exports = PexSearch::Init(env, exports);
+  exports = PrivateSearch::Init(env, exports);
   exports = Error::Init(env, exports);
 
   exports.Set("mock", Napi::Function::New(env, Mock));

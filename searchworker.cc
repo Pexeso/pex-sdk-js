@@ -110,5 +110,12 @@ Napi::Value SearchWorker::Resolve() {
   auto json = Env().Global().Get("JSON").As<Napi::Object>();
   auto parse = json.Get("parse").As<Napi::Function>();
 
-  return parse.Call(json, {result});
+  Napi::Array lookup_ids = Napi::Array::New(Env(), lookup_ids_.size());
+  for (size_t i = 0; i < lookup_ids_.size(); i++) {
+    lookup_ids[i] = Napi::String::New(Env(), lookup_ids_[i]);
+  }
+
+  Napi::Object parsed = parse.Call(json, {result}).ToObject();
+  parsed["lookup_ids"] = lookup_ids;
+  return parsed;
 }

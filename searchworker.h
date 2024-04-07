@@ -1,7 +1,7 @@
 // Copyright 2023 Pexeso Inc. All rights reserved.
 
-#ifndef _SEARCHOWORKER_H_
-#define _SEARCHOWORKER_H_
+#ifndef _SEARCHWORKER_H_
+#define _SEARCHWORKER_H_
 
 #include <napi.h>
 
@@ -31,4 +31,4 @@ class SearchWorker final : public BaseWorker {
   Pex_CheckSearchResult* result_ = nullptr;
 };
 
-#endif  // _SEARCHOWORKER_H_
+#endif  // _SEARCHWORKER_H_
