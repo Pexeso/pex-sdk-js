@@ -17,11 +17,20 @@ bool BaseWorker::Failed() {
 }
 
 void BaseWorker::OnOK() {
-  auto val = Resolve();
+  // First check if the worker failed during the Execution() call.
   if (Failed()) {
     Reject();
     return;
   }
+
+  auto val = Resolve();
+
+  // The worker could've also failed during the Resolve() call.
+  if (Failed()) {
+    Reject();
+    return;
+  }
+
   deferred_.Resolve(val);
 }
 
