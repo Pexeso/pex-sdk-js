@@ -8,12 +8,6 @@
 #include "defer.h"
 #include "error.h"
 
-ConnectWorker::~ConnectWorker() {
-  if (Failed()) {
-    Pex_Client_Delete(client_p_);
-  }
-}
-
 void ConnectWorker::Execute() {
   Defer defer;
   int status_code;
@@ -34,15 +28,18 @@ void ConnectWorker::Execute() {
   }
   defer.Add(std::bind(Pex_Status_Delete, &status));
 
-  *client_p_ = Pex_Client_New();
-  if (!*client_p_) {
+  auto client = Pex_Client_New();
+  if (!client) {
     return OOM();
   }
 
-  Pex_Client_Init(*client_p_, client_type_, client_id_.data(), client_secret_.data(), status);
+  Pex_Client_Init(client, client_type_, client_id_.data(), client_secret_.data(), status);
   if (!Pex_Status_OK(status)) {
+    Pex_Client_Delete(&client);
     return Fail(status);
   }
+
+  *client_p_ = client;
 }
 
 Napi::Value ConnectWorker::Resolve() {

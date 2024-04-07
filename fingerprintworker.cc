@@ -29,7 +29,7 @@ void FingerprintWorker::Execute() {
   defer.Add(std::bind(Pex_Buffer_Delete, &out_buf));
 
   if (is_file_) {
-    Pex_Fingerprint_File_For_Types(input_.data(), out_buf, status, type_);
+    Pex_Fingerprint_File(input_.data(), out_buf, status, type_);
   } else {
     Pex_Buffer* in_buf = Pex_Buffer_New();
     if (!in_buf) {
@@ -39,7 +39,7 @@ void FingerprintWorker::Execute() {
 
     Pex_Buffer_Set(in_buf, input_.data(), input_.size());
 
-    Pex_Fingerprint_Buffer_For_Types(in_buf, out_buf, status, type_);
+    Pex_Fingerprint_Buffer(in_buf, out_buf, status, type_);
   }
 
   if (!Pex_Status_OK(status)) {

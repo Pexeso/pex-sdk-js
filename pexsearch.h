@@ -7,7 +7,13 @@
 
 #include <pex/sdk/client.h>
 
-class PexSearch final : public Napi::ObjectWrap<PexSearch> {
+#include "fingerprinter.h"
+
+class PexSearch final : public Napi::ObjectWrap<PexSearch>, public Fingerprinter {
+  friend class Fingerprinter;
+
+  static Napi::FunctionReference constructor;
+
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   PexSearch(const Napi::CallbackInfo& info);
@@ -18,8 +24,6 @@ class PexSearch final : public Napi::ObjectWrap<PexSearch> {
  private:
   Napi::Value Connect(const Napi::CallbackInfo& info);
   Napi::Value StartSearch(const Napi::CallbackInfo& info);
-  Napi::Value FingerprintFile(const Napi::CallbackInfo& info);
-  Napi::Value FingerprintBuffer(const Napi::CallbackInfo& info);
 
   std::string client_id_;
   std::string client_secret_;

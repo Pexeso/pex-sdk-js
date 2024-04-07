@@ -67,18 +67,6 @@ void SearchWorker::ExecuteStartSearch() {
   }
 }
 
-static Napi::Value ConvertSegmentType(Napi::Env env, int segment_type) {
-  switch (segment_type) {
-    case 1:
-      return Napi::String::New(env, kAudio);
-    case 2:
-      return Napi::String::New(env, kVideo);
-    case 3:
-      return Napi::String::New(env, kMelody);
-  }
-  return Napi::String::New(env, "unknown");
-}
-
 void SearchWorker::ExecuteCheckSearch() {
   Defer defer;
 
@@ -113,89 +101,10 @@ void SearchWorker::ExecuteCheckSearch() {
 }
 
 Napi::Value SearchWorker::Resolve() {
-  auto js_result = Napi::Object::New(Env());
+  auto result = Napi::String::New(Env(), Pex_CheckSearchResult_GetJSON(result_));
 
-  auto js_lookup_ids = Napi::TypedArray::New(Env());
-  for (size_t i = 0; i < lookup_ids_.size(); i++) {
-    js_lookup_ids[i] = lookup_ids_[i];
-  }
-  js_result.Set("lookup_ids", js_lookup_ids);
+  auto json = Env().Global().Get("JSON").As<Napi::Object>();
+  auto parse = json.Get("parse").As<Napi::Function>();
 
-  auto js_matches = Napi::Array::New(Env());
-
-  if (Pex_CheckSearchResult_MatchCount(result_) == 0) {
-    js_result.Set("matches", js_matches);
-    js_result.Freeze();
-    return js_result;
-  }
-
-  Defer defer;
-
-  auto status = Pex_Status_New();
-  if (!status) {
-    OOM();
-    return Env().Undefined();
-  }
-  defer.Add(std::bind(Pex_Status_Delete, &status));
-
-  auto match = Pex_SearchMatch_New();
-  if (!match) {
-    OOM();
-    return Env().Undefined();
-  }
-  defer.Add(std::bind(Pex_SearchMatch_Delete, &match));
-
-  auto asset = Pex_Asset_New();
-  if (!asset) {
-    OOM();
-    return Env().Undefined();
-  }
-  defer.Add(std::bind(Pex_Asset_Delete, &asset));
-
-  int matches_pos = 0;
-  while (Pex_CheckSearchResult_NextMatch(result_, match, &matches_pos)) {
-    auto js_segments = Napi::Array::New(Env());
-
-    int64_t query_start;
-    int64_t query_end;
-    int64_t asset_start;
-    int64_t asset_end;
-    int type;
-
-    int segments_pos = 0;
-    while (Pex_SearchMatch_NextSegment(match, &query_start, &query_end, &asset_start, &asset_end,
-                                       &type, &segments_pos)) {
-      auto js_segment = Napi::Object::New(Env());
-      js_segment["query_start"] = query_start;
-      js_segment["query_end"] = query_end;
-      js_segment["asset_start"] = asset_start;
-      js_segment["asset_end"] = asset_end;
-      js_segment["type"] = ConvertSegmentType(Env(), type);
-      js_segment.Freeze();
-      js_segments[segments_pos - 1] = js_segment;
-    }
-
-    Pex_SearchMatch_GetAsset(match, asset, status);
-    if (!Pex_Status_OK(status)) {
-      Fail(status);
-      return Env().Undefined();
-    }
-
-    auto js_asset = Napi::Object::New(Env());
-    js_asset["title"] = Pex_Asset_GetTitle(asset);
-    js_asset["artist"] = Pex_Asset_GetArtist(asset);
-    js_asset["label"] = Pex_Asset_GetLabel(asset);
-    js_asset["duration"] = Pex_Asset_GetDuration(asset);
-    js_asset.Freeze();
-
-    auto js_match = Napi::Object::New(Env());
-    js_match["asset"] = js_asset;
-    js_match["segments"] = js_segments;
-    js_match.Freeze();
-    js_matches[matches_pos - 1] = js_match;
-  }
-
-  js_result["matches"] = js_matches;
-  js_result.Freeze();
-  return js_result;
+  return parse.Call(json, {result});
 }
