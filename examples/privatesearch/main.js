@@ -32,7 +32,7 @@ async function main() {
 
     // Start the search and await the result.
     let result = await client.startSearch({
-      fingerprint: ft,
+      fingerprint: ft,  // Fingerprint is required.
     })
 
     // Pretty print the result.
