@@ -4,7 +4,22 @@ For more information look at https://docs.search.pex.com/.
 
 ### Installation
 
-You can install the NodeJS language bindings like this:
+This package is written in C++ using https://github.com/nodejs/node-addon-api.
+As such it requires some extra dependencies to build. You can install them like this:
+
+##### Ubuntu/Debian
+
+```
+sudo apt-get install -y python3 pkg-config make g++
+```
+
+##### macOS
+
+```
+brew install pkg-config clang
+```
+
+Once you have the dependencies installed you can install the NodeJS language bindings like this:
 
 ```
 npm install git+ssh://git@github.com:Pexeso/pex-sdk-js.git
