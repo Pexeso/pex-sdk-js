@@ -29,9 +29,9 @@ async function main() {
 
     // Start the search and await the result.
     let result = await client.startSearch({
-      fingerprint: ft,            // Fingerprint is required.
-      type: pex.IDENTIFY_COPIES,  // This can also be pex.FIND_MATCHES.
-                                  // If not specified, defaults to pex.IDENTIFY_COPIES.
+      fingerprint: ft,           // Fingerprint is required.
+      type: pex.IDENTIFY_MUSIC,  // This can also be pex.FIND_MATCHES.
+                                 // If not specified, defaults to pex.IDENTIFY_MUSIC.
     })
 
     // Pretty print the result.
