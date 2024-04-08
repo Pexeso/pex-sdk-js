@@ -16,7 +16,7 @@ sudo apt-get install -y python3 pkg-config make g++
 ##### macOS
 
 ```
-brew install pkg-config clang
+brew install pkg-config
 ```
 
 Once you have the dependencies installed you can install the NodeJS language bindings like this:
