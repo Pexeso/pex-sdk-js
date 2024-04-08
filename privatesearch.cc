@@ -1,6 +1,6 @@
 // Copyright 2023 Pexeso Inc. All rights reserved.
 
-#include "PrivateSearch.h"
+#include "privatesearch.h"
 
 #include <pex/sdk/init.h>
 #include <pex/sdk/lock.h>
