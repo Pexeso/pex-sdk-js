@@ -16,7 +16,7 @@ void ConnectWorker::Execute() {
   Pex_Init(client_id_.data(), client_secret_.data(), &status_code, status_message,
            sizeof(status_message));
   if (status_code != ErrorCode::OK) {
-    return Fail(status_code, "failed to init the library");
+    return Fail(status_code, status_message);
   }
 
   Pex_Lock();
