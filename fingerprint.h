@@ -13,7 +13,7 @@ class Fingerprint final : public Napi::ObjectWrap<Fingerprint> {
  public:
   static Napi::Value New(Napi::Env env, std::string bytes);
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
-  Fingerprint(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Fingerprint>(info) {}
+  Fingerprint(const Napi::CallbackInfo& info);
 
   const std::string& bytes() const { return bytes_; }
   void set_bytes(std::string bytes) { bytes_ = std::move(bytes); };

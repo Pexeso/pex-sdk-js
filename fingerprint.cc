@@ -23,6 +23,22 @@ Napi::Object Fingerprint::Init(Napi::Env env, Napi::Object exports) {
   return exports;
 }
 
+Fingerprint::Fingerprint(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Fingerprint>(info) {
+  if (info.Length() == 0) {
+    return;
+  }
+
+  if (!info[0].IsBuffer()) {
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return;
+  }
+
+  auto arg = info[0].As<Napi::Uint8Array>();
+  std::string buf(reinterpret_cast<char*>(arg.Data()), arg.ByteLength());
+
+  set_bytes(std::move(buf));
+}
+
 Napi::Value Fingerprint::Dump(const Napi::CallbackInfo& info) {
   return Napi::Buffer<char>::New(info.Env(), bytes_.data(), bytes_.size());
 }
