@@ -115,7 +115,7 @@ Napi::Value PrivateSearch::Ingest(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value PrivateSearch::Archive(const Napi::CallbackInfo& info) {
-  if (info.Length() != 2 || !info[0].IsString() || !info[1].IsObject()) {
+  if (info.Length() == 0 || !info[0].IsString()) {
     Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
