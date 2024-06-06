@@ -11,4 +11,6 @@ class Fingerprinter {
   Napi::Value FingerprintBuffer(const Napi::CallbackInfo& info);
 };
 
+int GetFingerprintTypes(const Napi::CallbackInfo& info);
+
 #endif  // _PEXSEARCH_H_

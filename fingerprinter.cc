@@ -4,8 +4,6 @@
 #include "fingerprinter.h"
 #include "fingerprintworker.h"
 
-namespace {
-
 int GetFingerprintTypes(const Napi::CallbackInfo& info) {
   int ft_types = 0;
   if (info.Length() > 1) {
@@ -38,8 +36,6 @@ int GetFingerprintTypes(const Napi::CallbackInfo& info) {
   }
   return Pex_Fingerprint_Type_All;
 }
-
-}  // namespace
 
 Napi::Value Fingerprinter::FingerprintFile(const Napi::CallbackInfo& info) {
   if (info.Length() == 0 || !info[0].IsString()) {

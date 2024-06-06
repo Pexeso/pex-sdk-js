@@ -30,3 +30,5 @@ npm install git+ssh://git@github.com:Pexeso/pex-sdk-js.git
 ### Usage examples
 
 You can find usage examples in the [examples directory](examples).
+
+.

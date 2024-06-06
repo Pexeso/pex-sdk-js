@@ -11,6 +11,7 @@
         "fingerprintworker.cc",
         "init.cc",
         "pexsearch.cc",
+        "archiveworker.cc",
         "ingestworker.cc",
         "privatesearch.cc",
         "searchworker.cc",
