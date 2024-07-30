@@ -10,8 +10,6 @@
 #include "fingerprinter.h"
 
 class PrivateSearch final : public Napi::ObjectWrap<PrivateSearch>, public Fingerprinter {
-  friend class Fingerprinter;
-
   static Napi::FunctionReference constructor;
 
  public:
