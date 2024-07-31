@@ -9,6 +9,8 @@
 
 class Fingerprinter {
  public:
+  virtual ~Fingerprinter() {}
+
   Napi::Value FingerprintFile(const Napi::CallbackInfo& info);
   Napi::Value FingerprintBuffer(const Napi::CallbackInfo& info);
 
