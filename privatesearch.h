@@ -10,8 +10,6 @@
 #include "fingerprinter.h"
 
 class PrivateSearch final : public Napi::ObjectWrap<PrivateSearch>, public Fingerprinter {
-  friend class Fingerprinter;
-
   static Napi::FunctionReference constructor;
 
  public:
@@ -29,8 +27,6 @@ class PrivateSearch final : public Napi::ObjectWrap<PrivateSearch>, public Finge
 
   std::string client_id_;
   std::string client_secret_;
-
-  Pex_Client* client_ = nullptr;
 };
 
 #endif  // _PRIVATESEARCH_H_

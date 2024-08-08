@@ -5,10 +5,17 @@
 
 #include <napi.h>
 
+#include <pex/sdk/client.h>
+
 class Fingerprinter {
  public:
+  virtual ~Fingerprinter() {}
+
   Napi::Value FingerprintFile(const Napi::CallbackInfo& info);
   Napi::Value FingerprintBuffer(const Napi::CallbackInfo& info);
+
+ protected:
+  Pex_Client* client_ = nullptr;
 };
 
 int GetFingerprintTypes(const Napi::CallbackInfo& info);

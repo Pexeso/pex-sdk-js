@@ -52,7 +52,7 @@ Napi::Value Fingerprinter::FingerprintFile(const Napi::CallbackInfo& info) {
   }
 
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new FingerprintWorker(d, std::move(str), true, ft_types);
+  auto w = new FingerprintWorker(d, client_, std::move(str), true, ft_types);
   w->Queue();
   return d.Promise();
 }
@@ -72,7 +72,7 @@ Napi::Value Fingerprinter::FingerprintBuffer(const Napi::CallbackInfo& info) {
   }
 
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new FingerprintWorker(d, buf, false, ft_types);
+  auto w = new FingerprintWorker(d, client_, buf, false, ft_types);
   w->Queue();
   return d.Promise();
 }

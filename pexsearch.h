@@ -5,16 +5,12 @@
 
 #include <napi.h>
 
-#include <pex/sdk/client.h>
-
 #include "fingerprinter.h"
 
 const auto kFindMatches = "find_matches";
 const auto kIdentifyMusic = "identify_music";
 
 class PexSearch final : public Napi::ObjectWrap<PexSearch>, public Fingerprinter {
-  friend class Fingerprinter;
-
   static Napi::FunctionReference constructor;
 
  public:
@@ -30,8 +26,6 @@ class PexSearch final : public Napi::ObjectWrap<PexSearch>, public Fingerprinter
 
   std::string client_id_;
   std::string client_secret_;
-
-  Pex_Client* client_ = nullptr;
 };
 
 #endif  // _PEXSEARCH_H_
