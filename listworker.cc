@@ -50,7 +50,7 @@ Napi::Value ListWorker::Resolve() {
 
   Napi::Object parsed = parse.Call(json, {result}).ToObject();
 
-  *end_cursor_ = parsed["end_cursor"].ToString();
-  *limit_ = parsed["limit"].ToNumber();
-  return parsed["entries"];
+  *end_cursor_ = parsed.Get("end_cursor").ToString();
+  *limit_ = parsed.Get("limit").ToNumber();
+  return parsed.Get("entries");
 }

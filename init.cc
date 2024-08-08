@@ -8,6 +8,7 @@
 #include "mock.h"
 #include "pexsearch.h"
 #include "privatesearch.h"
+#include "lister.h"
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   env.SetInstanceData(new Context);
@@ -16,6 +17,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports = PexSearch::Init(env, exports);
   exports = PrivateSearch::Init(env, exports);
   exports = Error::Init(env, exports);
+  exports = Lister::Init(env, exports);
 
   exports.Set("mock", Napi::Function::New(env, Mock));
 
