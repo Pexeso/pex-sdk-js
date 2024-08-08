@@ -4,8 +4,6 @@
 #include "fingerprinter.h"
 #include "fingerprintworker.h"
 
-namespace {
-
 int GetFingerprintTypes(const Napi::CallbackInfo& info) {
   int ft_types = 0;
   if (info.Length() > 1) {
@@ -39,8 +37,6 @@ int GetFingerprintTypes(const Napi::CallbackInfo& info) {
   return Pex_Fingerprint_Type_All;
 }
 
-}  // namespace
-
 Napi::Value Fingerprinter::FingerprintFile(const Napi::CallbackInfo& info) {
   if (info.Length() == 0 || !info[0].IsString()) {
     Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
@@ -56,7 +52,7 @@ Napi::Value Fingerprinter::FingerprintFile(const Napi::CallbackInfo& info) {
   }
 
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new FingerprintWorker(d, std::move(str), true, ft_types);
+  auto w = new FingerprintWorker(d, client_, std::move(str), true, ft_types);
   w->Queue();
   return d.Promise();
 }
@@ -76,7 +72,7 @@ Napi::Value Fingerprinter::FingerprintBuffer(const Napi::CallbackInfo& info) {
   }
 
   auto d = Napi::Promise::Deferred::New(info.Env());
-  auto w = new FingerprintWorker(d, buf, false, ft_types);
+  auto w = new FingerprintWorker(d, client_, buf, false, ft_types);
   w->Queue();
   return d.Promise();
 }
