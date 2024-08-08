@@ -3,6 +3,7 @@
 
 #include "lister.h"
 
+#include "listworker.h"
 #include "context.h"
 
 Napi::Value Lister::New(Napi::Env env, Pex_Client* client, std::string end_cursor, int limit) {
@@ -18,7 +19,12 @@ Napi::Value Lister::New(Napi::Env env, Pex_Client* client, std::string end_curso
 }
 
 Napi::Object Lister::Init(Napi::Env env, Napi::Object exports) {
-  Napi::Function func = DefineClass(env, "Lister", {InstanceMethod("list", &Lister::List)});
+  Napi::Function func = DefineClass(env, "Lister",
+                                    {
+                                        InstanceMethod("list", &Lister::List),
+                                        InstanceMethod("endCursor", &Lister::EndCursor),
+                                        InstanceMethod("hasNextPage", &Lister::HasNextPage),
+                                    });
 
   auto ctx = env.GetInstanceData<Context>();
   ctx->lister = Napi::Persistent(func);
@@ -28,6 +34,17 @@ Napi::Object Lister::Init(Napi::Env env, Napi::Object exports) {
 }
 
 Napi::Value Lister::List(const Napi::CallbackInfo& info) {
-  // TODO: implement
+  auto d = Napi::Promise::Deferred::New(info.Env());
+  auto w = new ListWorker(d, client_, &end_cursor_, &has_next_page_, limit_);
+  w->Queue();
+  return d.Promise();
   return info.Env().Undefined();
+}
+
+Napi::Value Lister::EndCursor(const Napi::CallbackInfo& info) {
+  return Napi::String::New(Env(), end_cursor_);
+}
+
+Napi::Value Lister::HasNextPage(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(Env(), has_next_page_);
 }

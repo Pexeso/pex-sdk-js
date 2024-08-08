@@ -13,8 +13,12 @@
 class ListWorker final : public BaseWorker {
  public:
   ListWorker(Napi::Promise::Deferred& deferred, Pex_Client* client, std::string* end_cursor,
-             int* limit)
-      : BaseWorker(deferred), client_(client), end_cursor_(end_cursor), limit_(limit) {}
+             bool* has_next_page, int limit)
+      : BaseWorker(deferred),
+        client_(client),
+        end_cursor_(end_cursor),
+        has_next_page_(has_next_page),
+        limit_(limit) {}
 
   void Execute() override;
   Napi::Value Resolve() override;
@@ -22,7 +26,8 @@ class ListWorker final : public BaseWorker {
  private:
   Pex_Client* client_ = nullptr;
   std::string* end_cursor_ = nullptr;
-  int* limit_ = nullptr;
+  bool* has_next_page_ = nullptr;
+  int limit_ = 0;
 
   std::string result_json_;
 };

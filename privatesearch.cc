@@ -20,7 +20,7 @@ Napi::Object PrivateSearch::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("startSearch", &PrivateSearch::StartSearch),
                       InstanceMethod("ingest", &PrivateSearch::Ingest),
                       InstanceMethod("archive", &PrivateSearch::Archive),
-                      InstanceMethod("list", &PrivateSearch::List),
+                      InstanceMethod("listEntries", &PrivateSearch::ListEntries),
                       InstanceMethod("fingerprintFile", &PrivateSearch::FingerprintFile),
                       InstanceMethod("fingerprintBuffer", &PrivateSearch::FingerprintBuffer),
                   });
@@ -135,7 +135,7 @@ Napi::Value PrivateSearch::Archive(const Napi::CallbackInfo& info) {
   return d.Promise();
 }
 
-Napi::Value PrivateSearch::List(const Napi::CallbackInfo& info) {
+Napi::Value PrivateSearch::ListEntries(const Napi::CallbackInfo& info) {
   if (info.Length() != 1 || !info[0].IsObject()) {
     Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
     return info.Env().Undefined();

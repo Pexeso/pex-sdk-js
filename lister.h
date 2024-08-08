@@ -16,11 +16,14 @@ class Lister final : public Napi::ObjectWrap<Lister> {
 
  private:
   Napi::Value List(const Napi::CallbackInfo& info);
+  Napi::Value EndCursor(const Napi::CallbackInfo& info);
+  Napi::Value HasNextPage(const Napi::CallbackInfo& info);
 
  private:
   Pex_Client* client_ = nullptr;
   std::string end_cursor_;
   int limit_ = 0;
+  bool has_next_page_ = true;
 };
 
 #endif  // _LISTER_H_

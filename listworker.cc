@@ -32,7 +32,7 @@ void ListWorker::Execute() {
   defer.Add(std::bind(Pex_Status_Delete, &status));
 
   Pex_ListRequest_SetAfter(req, end_cursor_->c_str());
-  Pex_ListRequest_SetLimit(req, *limit_);
+  Pex_ListRequest_SetLimit(req, limit_);
 
   Pex_List(client_, req, res, status);
   if (!Pex_Status_OK(status)) {
@@ -51,6 +51,6 @@ Napi::Value ListWorker::Resolve() {
   Napi::Object parsed = parse.Call(json, {result}).ToObject();
 
   *end_cursor_ = parsed.Get("end_cursor").ToString();
-  *limit_ = parsed.Get("limit").ToNumber();
+  *has_next_page_ = parsed.Get("has_next_page").ToBoolean();
   return parsed.Get("entries");
 }
