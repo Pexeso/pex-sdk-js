@@ -152,8 +152,16 @@ Napi::Value PrivateSearch::ListEntries(const Napi::CallbackInfo& info) {
     }
   }
 
+  std::string after;
+  int limit = 0;
   auto after_arg = arg.Get("after");
+  if (!after_arg.IsUndefined()) {
+    after = after_arg.ToString();
+  }
   auto limit_arg = arg.Get("limit");
+  if (!limit_arg.IsUndefined()) {
+    limit = limit_arg.ToNumber();
+  }
 
-  return Lister::New(Env(), client_, after_arg.ToString(), limit_arg.ToNumber());
+  return Lister::New(Env(), client_, after, limit);
 }

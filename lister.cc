@@ -38,7 +38,6 @@ Napi::Value Lister::List(const Napi::CallbackInfo& info) {
   auto w = new ListWorker(d, client_, &end_cursor_, &has_next_page_, limit_);
   w->Queue();
   return d.Promise();
-  return info.Env().Undefined();
 }
 
 Napi::Value Lister::EndCursor(const Napi::CallbackInfo& info) {
