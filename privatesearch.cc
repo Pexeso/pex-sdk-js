@@ -8,6 +8,7 @@
 #include "connectworker.h"
 #include "searchworker.h"
 #include "ingestworker.h"
+#include "archiveworker.h"
 #include "context.h"
 
 Napi::Object PrivateSearch::Init(Napi::Env env, Napi::Object exports) {
@@ -17,6 +18,7 @@ Napi::Object PrivateSearch::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("connect", &PrivateSearch::Connect),
                       InstanceMethod("startSearch", &PrivateSearch::StartSearch),
                       InstanceMethod("ingest", &PrivateSearch::Ingest),
+                      InstanceMethod("archive", &PrivateSearch::Archive),
                       InstanceMethod("fingerprintFile", &PrivateSearch::FingerprintFile),
                       InstanceMethod("fingerprintBuffer", &PrivateSearch::FingerprintBuffer),
                   });
@@ -108,6 +110,25 @@ Napi::Value PrivateSearch::Ingest(const Napi::CallbackInfo& info) {
 
   auto d = Napi::Promise::Deferred::New(info.Env());
   auto w = new IngestWorker(d, client_, id, ft);
+  w->Queue();
+  return d.Promise();
+}
+
+Napi::Value PrivateSearch::Archive(const Napi::CallbackInfo& info) {
+  if (info.Length() == 0 || !info[0].IsString()) {
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
+  }
+
+  auto id = info[0].ToString();
+
+  auto ft_types = GetFingerprintTypes(info);
+  if (info.Env().IsExceptionPending()) {
+    return info.Env().Undefined();
+  }
+
+  auto d = Napi::Promise::Deferred::New(info.Env());
+  auto w = new ArchiveWorker(d, client_, id, ft_types);
   w->Queue();
   return d.Promise();
 }
