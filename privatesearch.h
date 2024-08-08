@@ -25,6 +25,7 @@ class PrivateSearch final : public Napi::ObjectWrap<PrivateSearch>, public Finge
   Napi::Value Connect(const Napi::CallbackInfo& info);
   Napi::Value StartSearch(const Napi::CallbackInfo& info);
   Napi::Value Ingest(const Napi::CallbackInfo& info);
+  Napi::Value List(const Napi::CallbackInfo& info);
 
   std::string client_id_;
   std::string client_secret_;

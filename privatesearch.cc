@@ -9,6 +9,7 @@
 #include "searchworker.h"
 #include "ingestworker.h"
 #include "context.h"
+#include "lister.h"
 
 Napi::Object PrivateSearch::Init(Napi::Env env, Napi::Object exports) {
   Napi::Function func =
@@ -17,6 +18,7 @@ Napi::Object PrivateSearch::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("connect", &PrivateSearch::Connect),
                       InstanceMethod("startSearch", &PrivateSearch::StartSearch),
                       InstanceMethod("ingest", &PrivateSearch::Ingest),
+                      InstanceMethod("list", &PrivateSearch::List),
                       InstanceMethod("fingerprintFile", &PrivateSearch::FingerprintFile),
                       InstanceMethod("fingerprintBuffer", &PrivateSearch::FingerprintBuffer),
                   });
@@ -110,4 +112,27 @@ Napi::Value PrivateSearch::Ingest(const Napi::CallbackInfo& info) {
   auto w = new IngestWorker(d, client_, id, ft);
   w->Queue();
   return d.Promise();
+}
+
+Napi::Value PrivateSearch::List(const Napi::CallbackInfo& info) {
+  if (info.Length() != 1 || !info[0].IsObject()) {
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
+  }
+
+  auto arg = info[0].As<Napi::Object>();
+
+  Napi::Array props = arg.GetPropertyNames();
+  for (uint32_t i = 0; i < props.Length(); i++) {
+    std::string prop = props.Get(i).ToString();
+    if (prop != "after" && prop != "limit") {
+      Napi::Error::New(info.Env(), "Unrecognized option").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
+  }
+
+  auto after_arg = arg.Get("after");
+  auto limit_arg = arg.Get("limit");
+
+  return Lister::New(Env(), client_, after_arg.ToString(), limit_arg.ToNumber());
 }
