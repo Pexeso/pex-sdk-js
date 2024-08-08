@@ -10,6 +10,7 @@ struct Context {
   Napi::FunctionReference privatesearch;
   Napi::FunctionReference fingerprint;
   Napi::FunctionReference error;
+  Napi::FunctionReference lister;
 };
 
 #endif  // _CONTEXT_H

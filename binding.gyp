@@ -16,7 +16,9 @@
         "privatesearch.cc",
         "searchworker.cc",
         "error.cc",
-        "mock.cc"
+        "mock.cc",
+        "lister.cc",
+        "listworker.cc"
       ],
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include.replace(' ', '\\\\\\ ')\")",
