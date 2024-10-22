@@ -17,12 +17,13 @@ enum ErrorCode {
   NOT_INITIALIZED = 8,
   CONNECTION_ERROR = 9,
   LOOKUP_FAILED = 10,
-  LOOKUP_TIMED_OUT = 11
+  LOOKUP_TIMED_OUT = 11,
+  RESOURCE_EXHAUSTED = 12
 };
 
 class Error : public Napi::ObjectWrap<Error> {
  public:
-  static Napi::Value New(Napi::Env env, int code, std::string message);
+  static Napi::Value New(Napi::Env env, int code, std::string message, bool is_retryable = false);
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
 
   Error(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Error>(info) {}

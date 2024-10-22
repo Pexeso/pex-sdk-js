@@ -4,12 +4,13 @@
 #include "error.h"
 
 void BaseWorker::Fail(const Pex_Status* status) {
-  Fail(Pex_Status_GetCode(status), Pex_Status_GetMessage(status));
+  Fail(Pex_Status_GetCode(status), Pex_Status_GetMessage(status), Pex_Status_IsRetryable(status));
 }
 
-void BaseWorker::Fail(int code, const std::string& message) {
+void BaseWorker::Fail(int code, const std::string& message, bool is_retryable) {
   status_code_ = code;
   status_message_ = message;
+  is_retryable_ = is_retryable;
 }
 
 bool BaseWorker::Failed() {
@@ -43,7 +44,7 @@ void BaseWorker::OnError(const Napi::Error& error) {
 }
 
 void BaseWorker::Reject() {
-  auto err = Error::New(Env(), status_code_, status_message_);
+  auto err = Error::New(Env(), status_code_, status_message_, is_retryable_);
   deferred_.Reject(err);
 }
 

@@ -4,11 +4,12 @@
 
 #include "context.h"
 
-Napi::Value Error::New(Napi::Env env, int code, std::string message) {
+Napi::Value Error::New(Napi::Env env, int code, std::string message, bool is_retryable) {
   auto ctx = env.GetInstanceData<Context>();
   auto err = ctx->error.New({});
   err.Set("code", code);
   err.Set("message", message);
+  err.Set("is_retryable", is_retryable);
   err.Freeze();
   return err;
 }
@@ -28,6 +29,7 @@ Napi::Object Error::Init(Napi::Env env, Napi::Object exports) {
           StaticValue("CONNECTION_ERROR", Napi::Number::New(env, ErrorCode::CONNECTION_ERROR)),
           StaticValue("LOOKUP_FAILED", Napi::Number::New(env, ErrorCode::LOOKUP_FAILED)),
           StaticValue("LOOKUP_TIMED_OUT", Napi::Number::New(env, ErrorCode::LOOKUP_TIMED_OUT)),
+          StaticValue("RESOURCE_EXHAUSTED", Napi::Number::New(env, ErrorCode::RESOURCE_EXHAUSTED)),
       });
 
   auto ctx = env.GetInstanceData<Context>();
