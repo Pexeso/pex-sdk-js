@@ -16,7 +16,7 @@ class BaseWorker : public Napi::AsyncWorker {
   virtual Napi::Value Resolve() = 0;
 
   void Fail(const Pex_Status* status);
-  void Fail(int code, const std::string& msg);
+  void Fail(int code, const std::string& msg, bool is_retryable = false);
   bool Failed();
 
   void OOM();
@@ -29,6 +29,7 @@ class BaseWorker : public Napi::AsyncWorker {
   Napi::Promise::Deferred deferred_;
   int status_code_ = 0;
   std::string status_message_;
+  bool is_retryable_ = false;
 };
 
 #endif  // _BASEWORKER_H_
