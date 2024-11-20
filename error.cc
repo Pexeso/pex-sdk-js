@@ -9,7 +9,7 @@ Napi::Value Error::New(Napi::Env env, int code, std::string message, bool is_ret
   auto err = ctx->error.New({});
   err.Set("code", code);
   err.Set("message", message);
-  err.Set("is_retryable", is_retryable);
+  err.Set("isRetryable", is_retryable);
   err.Freeze();
   return err;
 }
