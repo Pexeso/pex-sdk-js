@@ -9,6 +9,7 @@ const auto kAudio = "audio";
 const auto kVideo = "video";
 const auto kMelody = "melody";
 const auto kPhonetic = "phonetic";
+const auto kClass = "class";
 
 class Fingerprint final : public Napi::ObjectWrap<Fingerprint> {
  public:

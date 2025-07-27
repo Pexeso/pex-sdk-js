@@ -29,6 +29,8 @@ int GetFingerprintTypes(const Napi::CallbackInfo& info) {
         ft_types |= Pex_Fingerprint_Type_Melody;
       } else if (str == kPhonetic) {
         ft_types |= Pex_Fingerprint_Type_Phonetic;
+      } else if (str == kClass) {
+        ft_types |= Pex_Fingerprint_Type_Class;
       }
     }
   }
