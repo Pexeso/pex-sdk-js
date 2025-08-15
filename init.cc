@@ -5,7 +5,6 @@
 #include "context.h"
 #include "error.h"
 #include "fingerprint.h"
-#include "mock.h"
 #include "pexsearch.h"
 #include "privatesearch.h"
 #include "lister.h"
@@ -18,8 +17,6 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports = PrivateSearch::Init(env, exports);
   exports = Error::Init(env, exports);
   exports = Lister::Init(env, exports);
-
-  exports.Set("mock", Napi::Function::New(env, Mock));
 
   exports.Set("AUDIO", kAudio);
   exports.Set("VIDEO", kVideo);

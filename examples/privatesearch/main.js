@@ -13,11 +13,6 @@ async function main() {
     // returns a promise, just like most operations in this package.
     await client.connect()
 
-    // Mock the client. This will make the client talk to the local testing
-    // server instead of production. This must be ommited when deploying to
-    // production.
-    await pex.mock(client)
-
     // Fingerprint the input file. We're requesting only an audio fingerprint.
     // To get only a melody fingerprint:
     //   let ft = await client.fingerprintFile(INPUT_FILE, [pex.MELODY])

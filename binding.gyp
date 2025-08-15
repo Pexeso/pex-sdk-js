@@ -16,7 +16,6 @@
         "privatesearch.cc",
         "searchworker.cc",
         "error.cc",
-        "mock.cc",
         "lister.cc",
         "listworker.cc"
       ],
