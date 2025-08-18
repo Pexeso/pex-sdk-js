@@ -22,7 +22,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("VIDEO", kVideo);
   exports.Set("MELODY", kMelody);
   exports.Set("PHONETIC", kPhonetic);
-  exports.Set("CLASS", kClass);
+  exports.Set("CLASSIFICATION", kClassification);
 
   exports.Set("FIND_MATCHES", kFindMatches);
   exports.Set("IDENTIFY_MUSIC", kIdentifyMusic);
