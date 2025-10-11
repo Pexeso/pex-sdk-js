@@ -6,6 +6,7 @@
 #include <pex/sdk/lock.h>
 
 #include "connectworker.h"
+#include "getworker.h"
 #include "searchworker.h"
 #include "ingestworker.h"
 #include "archiveworker.h"
@@ -21,6 +22,7 @@ Napi::Object PrivateSearch::Init(Napi::Env env, Napi::Object exports) {
                       InstanceMethod("ingest", &PrivateSearch::Ingest),
                       InstanceMethod("archive", &PrivateSearch::Archive),
                       InstanceMethod("listEntries", &PrivateSearch::ListEntries),
+                      InstanceMethod("getEntry", &PrivateSearch::GetEntry),
                       InstanceMethod("fingerprintFile", &PrivateSearch::FingerprintFile),
                       InstanceMethod("fingerprintBuffer", &PrivateSearch::FingerprintBuffer),
                   });
@@ -164,4 +166,18 @@ Napi::Value PrivateSearch::ListEntries(const Napi::CallbackInfo& info) {
   }
 
   return Lister::New(Env(), client_, after, limit);
+}
+
+Napi::Value PrivateSearch::GetEntry(const Napi::CallbackInfo& info) {
+  if (info.Length() == 0 || !info[0].IsString()) {
+    Napi::Error::New(info.Env(), "Invalid arguments").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
+  }
+
+  auto id = info[0].ToString();
+
+  auto d = Napi::Promise::Deferred::New(info.Env());
+  auto w = new GetWorker(d, client_, id);
+  w->Queue();
+  return d.Promise();
 }
