@@ -31,8 +31,7 @@ void GetWorker::Execute() {
   }
 
   auto data = static_cast<const char*>(Pex_Buffer_GetData(buffer));
-  auto size = Pex_Buffer_GetSize(buffer);
-  result_json_.assign(data, size);
+  result_json_ = data;
 }
 
 Napi::Value GetWorker::Resolve() {
@@ -41,6 +40,5 @@ Napi::Value GetWorker::Resolve() {
   auto json = Env().Global().Get("JSON").As<Napi::Object>();
   auto parse = json.Get("parse").As<Napi::Function>();
 
-  Napi::Object parsed = parse.Call(json, {result}).ToObject();
-  return parsed;
+  return parse.Call(json, {result}).ToObject();
 }
