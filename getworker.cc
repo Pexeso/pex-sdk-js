@@ -41,5 +41,6 @@ Napi::Value GetWorker::Resolve() {
   auto json = Env().Global().Get("JSON").As<Napi::Object>();
   auto parse = json.Get("parse").As<Napi::Function>();
 
-  return parse.Call(json, {result}).ToObject();
+  Napi::Object parsed = parse.Call(json, {result}).ToObject();
+  return parsed;
 }
