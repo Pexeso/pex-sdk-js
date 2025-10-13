@@ -1,6 +1,6 @@
 {
   "name": "pex-sdk",
-  "version": "4.7.0",
+  "version": "4.6.0",
   "description": "Pex SDK for NodeJS",
   "main": "index.js",
   "scripts": {
