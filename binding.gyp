@@ -17,7 +17,8 @@
         "searchworker.cc",
         "error.cc",
         "lister.cc",
-        "listworker.cc"
+        "listworker.cc",
+        "getworker.cc"
       ],
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include.replace(' ', '\\\\\\ ')\")",
