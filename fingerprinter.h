@@ -18,6 +18,6 @@ class Fingerprinter {
   Pex_Client* client_ = nullptr;
 };
 
-int GetFingerprintTypes(const Napi::CallbackInfo& info);
+int GetFingerprintTypes(const Napi::CallbackInfo& info, const Napi::Value& arg);
 
 #endif  // _PEXSEARCH_H_
