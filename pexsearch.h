@@ -23,6 +23,7 @@ class PexSearch final : public Napi::ObjectWrap<PexSearch>, public Fingerprinter
  private:
   Napi::Value Connect(const Napi::CallbackInfo& info);
   Napi::Value StartSearch(const Napi::CallbackInfo& info);
+  Napi::Value StartISRCSearch(const Napi::CallbackInfo& info);
 
   std::string client_id_;
   std::string client_secret_;

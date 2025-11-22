@@ -41,17 +41,21 @@ void SearchWorker::ExecuteStartSearch() {
   }
   defer.Add(std::bind(Pex_StartSearchResult_Delete, &result));
 
-  auto buffer = Pex_Buffer_New();
-  if (!buffer) {
-    return OOM();
-  }
-  defer.Add(std::bind(Pex_Buffer_Delete, &buffer));
+  if (ft_) {
+    auto buffer = Pex_Buffer_New();
+    if (!buffer) {
+      return OOM();
+    }
+    defer.Add(std::bind(Pex_Buffer_Delete, &buffer));
 
-  Pex_Buffer_Set(buffer, ft_->bytes().data(), ft_->bytes().size());
+    Pex_Buffer_Set(buffer, ft_->bytes().data(), ft_->bytes().size());
 
-  Pex_StartSearchRequest_SetFingerprint(request, buffer, status);
-  if (!Pex_Status_OK(status)) {
-    return Fail(status);
+    Pex_StartSearchRequest_SetFingerprint(request, buffer, status);
+    if (!Pex_Status_OK(status)) {
+      return Fail(status);
+    }
+  } else {
+    Pex_StartSearchRequest_SetISRC(request, isrc_.data(), ft_types_);
   }
 
   if (search_type_ != Pex_SearchType_Default) {
