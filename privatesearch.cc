@@ -126,9 +126,12 @@ Napi::Value PrivateSearch::Archive(const Napi::CallbackInfo& info) {
 
   auto id = info[0].ToString();
 
-  auto ft_types = GetFingerprintTypes(info);
-  if (info.Env().IsExceptionPending()) {
-    return info.Env().Undefined();
+  int ft_types = Pex_Fingerprint_Type_All;
+  if (info.Length() > 1) {
+    ft_types = GetFingerprintTypes(info, info[1]);
+    if (info.Env().IsExceptionPending()) {
+      return info.Env().Undefined();
+    }
   }
 
   auto d = Napi::Promise::Deferred::New(info.Env());

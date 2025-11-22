@@ -47,7 +47,7 @@ Napi::Value Fingerprinter::FingerprintFile(const Napi::CallbackInfo& info) {
 
   std::string str = info[0].As<Napi::String>();
 
-  auto ft_types = Pex_Fingerprint_Type_All;
+  int ft_types = Pex_Fingerprint_Type_All;
   if (info.Length() > 1) {
     ft_types = GetFingerprintTypes(info, info[1]);
     if (info.Env().IsExceptionPending()) {
@@ -70,9 +70,12 @@ Napi::Value Fingerprinter::FingerprintBuffer(const Napi::CallbackInfo& info) {
   auto arg = info[0].As<Napi::Uint8Array>();
   std::string_view buf(reinterpret_cast<char*>(arg.Data()), arg.ByteLength());
 
-  auto ft_types = GetFingerprintTypes(info);
-  if (info.Env().IsExceptionPending()) {
-    return info.Env().Undefined();
+  int ft_types = Pex_Fingerprint_Type_All;
+  if (info.Length() > 1) {
+    ft_types = GetFingerprintTypes(info, info[1]);
+    if (info.Env().IsExceptionPending()) {
+      return info.Env().Undefined();
+    }
   }
 
   auto d = Napi::Promise::Deferred::New(info.Env());

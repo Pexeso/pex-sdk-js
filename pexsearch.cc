@@ -130,7 +130,6 @@ Napi::Value PexSearch::StartISRCSearch(const Napi::CallbackInfo& info) {
   }
 
   auto arg = info[0].As<Napi::Object>();
-  auto ctx = info.Env().GetInstanceData<Context>();
 
   CheckProperties(info, arg, {"isrc", "type", "fingerprintTypes"});
   if (info.Env().IsExceptionPending()) {
@@ -143,9 +142,9 @@ Napi::Value PexSearch::StartISRCSearch(const Napi::CallbackInfo& info) {
     return info.Env().Undefined();
   }
 
-  auto ft_types = Pex_Fingerprint_Type_All;
-  if (info.Length() > 1) {
-    ft_types = GetFingerprintTypes(info, info[1]);
+  int ft_types = Pex_Fingerprint_Type_All;
+  if (arg.Has("fingerprintTypes")) {
+    ft_types = GetFingerprintTypes(info, arg.Get("fingerprintTypes"));
     if (info.Env().IsExceptionPending()) {
       return info.Env().Undefined();
     }
