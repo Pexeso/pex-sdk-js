@@ -1,6 +1,6 @@
 # NodeJS bindings for the Attribution Engine SDK
 
-For more information look at https://docs.search.pex.com/.
+For more information look at https://docs.pex.com/search/
 
 ### Installation
 
