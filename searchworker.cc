@@ -41,12 +41,14 @@ void SearchWorker::ExecuteStartSearch() {
   }
   defer.Add(std::bind(Pex_StartSearchResult_Delete, &result));
 
+  Pex_Buffer* buffer = nullptr;
+  defer.Add(std::bind(Pex_Buffer_Delete, &buffer));
+
   if (ft_) {
-    auto buffer = Pex_Buffer_New();
+    buffer = Pex_Buffer_New();
     if (!buffer) {
       return OOM();
     }
-    defer.Add(std::bind(Pex_Buffer_Delete, &buffer));
 
     Pex_Buffer_Set(buffer, ft_->bytes().data(), ft_->bytes().size());
 
